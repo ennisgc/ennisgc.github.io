@@ -1,0 +1,17 @@
+/* CSS HEX */
+:root {
+
+--lightestblue: #d1d1ff;
+--purple: #710079;
+--blue: #0000f5;
+--lightblue: #5252ff;
+--gold: #BE9F57;
+--navy: #06062A;
+
+}
+
+
+body {
+    background-color: #06062A;
+    color: #d1d1ff;
+}
