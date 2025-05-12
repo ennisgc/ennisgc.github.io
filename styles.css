@@ -10,8 +10,21 @@
 
 }
 
+.btn-link {
+    color: var(--lightestblue)
+}
 
-body {
-    background-color: #06062A;
+header {
+    margin-bottom: 0;
+}
+
+main {
+    background: linear-gradient(#4b325d, #06062A);
     color: #d1d1ff;
+    margin-top: 0;
+}
+
+pre {
+    color: #06062A;
+    font-size: 1.5rem;
 }
