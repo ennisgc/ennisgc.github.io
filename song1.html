@@ -56,7 +56,7 @@ Was blind, but now I see.
       </div>
       <div class="col-md-6 col-12">
         <div class="card p-2">
-          <h5>Backing Track</h5>
+          <h5>Backing Track</h5>  
           <audio controls class="w-100 mt-2">
             <source src="audio/amazing-grace-bass.mp3" type="audio/mp3">
             Your browser does not support the audio element.
@@ -64,22 +64,40 @@ Was blind, but now I see.
         </div>
       </div>
       </div>
-
-    <h4 class="mt-4">YouTube Videos</h4>
-    <div class="row">
-      <div class="col-6">
+<div class="container">
+  <div class="row g-3 my-3">
+    <!-- Videos Column - Takes 6 columns on md+ screens, full width on smaller screens -->
+    <div class="col-12 col-md-6">
+      <h4 class="mt-4">YouTube Videos</h4>
+      
+      <!-- First Video -->
+      <div class="mb-4">
         <h5>Backing Track</h5>
-    <div class="ratio ratio-16x9 mb-4">
-      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Amazing Grace Choir" allowfullscreen></iframe>
+        <div class="ratio ratio-16x9">
+          <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Amazing Grace Choir" allowfullscreen></iframe>
+        </div>
+      </div>
+      
+      <!-- Second Video -->
+      <div class="mb-4">
+        <h5>Full Song</h5>
+        <div class="ratio ratio-16x9">
+          <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Amazing Grace Choir" allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
+    
+    <!-- Sheet Music Column - Takes 6 columns on md+ screens, full width on smaller screens -->
+    <div class="col-12 col-md-6">
+      <h4 class="mt-4">Sheet Music</h4>
+      <h5>PDF</h5>
+      <div class="card p-2">
+        <a href="sheet-music/amazing-grace.pdf" class="btn btn-primary w-100 mt-2">Download PDF</a>
+      </div>
     </div>
-    <div class="col-6">
-      <h5>Full Song</h5>
-    <div class="ratio ratio-16x9 mb-4">
-      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Amazing Grace Choir" allowfullscreen></iframe>
-    </div>
-    </div>
-  </div></div>
+  </div>
+</div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </main>
 </body>
