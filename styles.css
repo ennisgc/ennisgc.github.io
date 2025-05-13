@@ -6,12 +6,12 @@
 --blue: #0000af;
 --lightblue: #5252ff;
 --gold: #BE9F57;
---navy: #06062A;
+--navy: #00006d;
 
 }
 
 .btn-link {
-    color: var(--lightestblue)
+    color: var(--blue)
 }
 
 header {
@@ -19,12 +19,13 @@ header {
 }
 
 main {
-    background: linear-gradient(#06062A, #710079);
-    color: #d1d1ff;
+    background-color: white;
+    color: #000098;
     margin-top: 0;
 }
 
 pre {
-    color: #06062A;
-    font-size: 1.5rem;
+    color: #00006d;
+    font-size: 1.2rem;
+    font-family: sans-serif;
 }
