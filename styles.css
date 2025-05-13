@@ -28,4 +28,5 @@ pre {
     color: #00006d;
     font-size: 1.2rem;
     font-family: sans-serif;
+    white-space: pre-wrap;
 }
