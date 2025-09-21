@@ -35,3 +35,7 @@ pre {
     padding: 0.5rem 1rem;
     font-size: 1.2rem;
 }
+
+audio {
+    width: 100%;
+}
