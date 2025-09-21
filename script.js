@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Default size is always 1.2rem
             const defaultSize = 1.2;
-            let currentSize = defaultSize;
+            let currentSize;
             
             // Update button states based on current size
             function updateButtonStates() {
@@ -60,26 +60,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Update button states
                     updateButtonStates();
                     
-                    // Only store in localStorage if it's different from default
-                    if (newSize !== defaultSize) {
-                        localStorage.setItem('lyricsTextSize', newSize);
-                    } else {
-                        // Remove from localStorage if back to default
-                        localStorage.removeItem('lyricsTextSize');
-                    }
+                    // Always store in localStorage when changed by user
+                    localStorage.setItem('lyricsTextSize', newSize);
                 }
             }
             
-            // Load saved font size or use default
+            // Check if there's a saved size in localStorage
             const savedSize = localStorage.getItem('lyricsTextSize');
             if (savedSize) {
+                // Use saved size
                 currentSize = parseFloat(savedSize);
             } else {
+                // Use default size (1.2rem)
                 currentSize = defaultSize;
             }
             
-            // Always apply the size (either saved or default)
-            updateFontSize(currentSize);
+            // Always apply the determined size
+            if (lyricsText) {
+                lyricsText.style.fontSize = currentSize + 'rem';
+            }
+            updateButtonStates();
             
             // Event listeners
             decreaseBtn.addEventListener('click', function() {
