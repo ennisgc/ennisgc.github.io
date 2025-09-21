@@ -15,7 +15,8 @@
   <div class="container">
     <h1>Current Performance List</h1>
     <div class="list-group" id="performanceList">
-      <a href="so-strong.html" class="list-group-item list-group-item-action">(Something Inside) So Strong</a>
+      <a href="aint-no-mountain-high-enough.html" class="list-group-item list-group-item-action">Ain't No Mountain High Enough</a>
+      <a href="something-inside-so-strong.html" class="list-group-item list-group-item-action">Something Inside So Strong</a>
       <!-- Add more songs as needed -->
     </div>
     <br>
@@ -25,7 +26,8 @@
       <input type="text" id="songFilter" class="form-control" placeholder="Filter songs...">
     </div>
     <div class="list-group" id="songList">
-      <a href="so-strong.html" class="list-group-item list-group-item-action">(Something Inside) So Strong</a>
+      <a href="aint-no-mountain-high-enough.html" class="list-group-item list-group-item-action">Ain't No Mountain High Enough</a>
+      <a href="something-inside-so-strong.html" class="list-group-item list-group-item-action">Something Inside So Strong</a>
       <!-- Add more songs as needed -->
     </div>
   </div>
@@ -38,8 +40,29 @@
         item.style.display = item.textContent.toLowerCase().includes(filter) ? '' : 'none';
       });
     });
+
+    // Sort both lists alphabetically
+    function sortList(listId) {
+      const list = document.getElementById(listId);
+      if (!list) return; // Guard clause if element doesn't exist
+      
+      const items = [...list.children].sort((a, b) =>
+        a.textContent.localeCompare(b.textContent)
+      );
+      list.innerHTML = items.map(item => item.outerHTML).join('');
+    }
+
+    function sortAllLists() {
+      sortList('songList');
+      sortList('performanceList');
+    }
+
+    // Call on page load
+    window.addEventListener('DOMContentLoaded', sortAllLists);
   </script>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </main>
+
 </body>
 </html>
