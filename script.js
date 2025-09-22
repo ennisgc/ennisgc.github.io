@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get the lyrics text element
             const lyricsText = document.querySelector('#lyricsOffcanvas pre');
             
-            // Default size is always 1.2rem
-            const defaultSize = 1.2;
+            // Default size is always 1rem
+            const defaultSize = 1;
             let currentSize;
             
             // Update button states based on current size
