@@ -26,14 +26,14 @@ main {
 
 pre {
     color: #00006d;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-family: sans-serif;
     white-space: pre-wrap;
 }
 
 .list-group-item {
     padding: 0.5rem 1rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 audio {
