@@ -39,3 +39,19 @@ pre {
 audio {
     width: 100%;
 }
+
+.genre-label {
+  display: inline-block;
+  width: 30px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-right: 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.genre-label.X { background-color: var(--gold); }
+.genre-label.G { background-color: var(--purple); }
+.genre-label.Co { background-color: var(--blue); }

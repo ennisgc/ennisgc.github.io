@@ -108,4 +108,5 @@ document.addEventListener('DOMContentLoaded', function() {
         // Also create on page load if offcanvas is already visible
         createTextSizeControls();
     }
+
 });
