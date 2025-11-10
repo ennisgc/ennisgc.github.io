@@ -52,6 +52,5 @@ audio {
   user-select: none;
 }
 
-.genre-label.X { background-color: var(--gold); }
 .genre-label.G { background-color: var(--purple); }
 .genre-label.Co { background-color: var(--blue); }
