@@ -54,3 +54,16 @@ audio {
 
 .genre-label.G { background-color: var(--purple); }
 .genre-label.Co { background-color: var(--blue); }
+
+.genre-label.X {
+  color: transparent; /* hides the 'X' text */
+  position: relative;
+}
+
+.genre-label.X::after {
+  content: "🎅";
+  color: black; /* visible emoji color */
+  position: absolute;
+  left: 0;
+  top: 0;
+}
