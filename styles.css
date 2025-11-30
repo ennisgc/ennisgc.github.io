@@ -27,7 +27,7 @@ main {
 pre {
     color: #00006d;
     font-size: 1rem;
-    font-family: sans-serif;
+    font-family: "Roboto Mono", monospace;
     white-space: pre-wrap;
 }
 
