@@ -1,0 +1,28 @@
+{
+  "title": "(Something Inside) So Strong",
+  "videos": [],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        },
+        {
+          "label": "Live Recording 1 (All) + Acapella",
+          "file": "live-recording-1-all-acapella.mp3"
+        },
+        {
+          "label": "Live Recording 2 (Men Focused)",
+          "file": "live-recording-2-men-focused.m4a"
+        },
+        {
+          "label": "Live Recording 3 (Men Focused + Piano Backing)",
+          "file": "live-recording-3-men-focused-piano-backing.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

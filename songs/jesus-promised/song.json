@@ -1,0 +1,29 @@
+{
+  "title": "Jesus Promised",
+  "videos": [
+    {
+      "id": "v_6aNxW_hk0",
+      "title": "Jesus Promised"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

@@ -1,0 +1,38 @@
+{
+  "title": "My Life is in Your Hands",
+  "videos": [
+    {
+      "id": "u6eoPzwdR9Q",
+      "title": "My Life is in Your Hands"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Phone Recording (Men Focused)",
+          "file": "phone-recording-men-focused.m4a"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

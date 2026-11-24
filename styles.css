@@ -67,3 +67,42 @@ audio {
   left: 0;
   top: 0;
 }
+
+
+/* Lyrics: full-width offcanvas on mobile, sticky side panel on desktop */
+@media (max-width: 991.98px) {
+  #lyricsOffcanvas {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .lyrics-col {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+  }
+
+  .lyrics-panel .offcanvas-body {
+    display: block;
+    padding: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    border: 1px solid var(--lightestblue);
+    border-radius: 0.5rem;
+  }
+
+  /* Players/video stack full width inside the narrower left column */
+  .song-main .row > [class*="col-lg-6"] {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+
+.lyrics-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+  padding-bottom: 0.5rem;
+}

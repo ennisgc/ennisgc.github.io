@@ -1,0 +1,21 @@
+{
+  "title": "Have Yourself a Merry Little Christmas",
+  "videos": [
+    {
+      "id": "-tJtsKngXJU",
+      "title": "Have Yourself a Merry Little Christmas"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

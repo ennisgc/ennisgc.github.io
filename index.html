@@ -16,125 +16,82 @@
 </header>
 <main class="pb-5">
   <div class="container">
+    <div class="accordion mt-3" id="updatesAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#updatesBody" aria-expanded="false" aria-controls="updatesBody">Latest Updates</button>
+        </h2>
+        <div id="updatesBody" class="accordion-collapse collapse" data-bs-parent="#updatesAccordion">
+          <div class="accordion-body py-2 small">
+            <ul class="mb-0">
+              <li>Each song now lives in its own folder (<code>songs/&lt;song&gt;/</code>) with all of its tracks. Old links still redirect.</li>
+              <li>Lyrics now show in a side panel on desktop (still a full-screen pop-up on phones).</li>
+              <li>Added Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain.</li>
+              <li>The Current Performance List is now the Christmas set, in performance order.</li>
+              <li>Fixed the Winter Wonderland soprano line tape, layout errors, and the genre filter.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row g-5">
       <div class="col-12 col-md-8">
-    <h2>Current Performance List</h2>
-    <div class="list-group" id="performanceList">
-      <a href="something-inside-so-strong.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Something Inside So Strong</a>
-      <a href="stronghold.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Stronghold</a>
-      <a href="no-ways-tired.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>No Ways Tired</a>
-      <a href="over-my-head.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Over my head</a> 
-      <a href="glory-glory.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Glory Glory</a> 
-      <a href="amazing-grace.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Amazing Grace</a> 
-      <a href="all-we-ask.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>All We Ask</a> 
-      <a href="goodness-of-god.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Goodness of God</a>
-       </div>
-    </div>
+        <h2>Current Performance List</h2>
+        <div class="list-group" id="performanceList"></div>
+      </div>
       <div class="col-12 col-md-4">
-    <h2 class="mb-4">All Songs</h2>
-    <div class="btn-group mb-3 d-flex-row" role="group" aria-label="Genre filter">
-  <button type="button" class="btn btn-outline-primary" data-genre="all">All</button>
-  <button type="button" class="btn btn-outline-primary" data-genre="X">Christmas</button>
-  <button type="button" class="btn btn-outline-primary" data-genre="G">Gospel</button>
-  <button type="button" class="btn btn-outline-primary" data-genre="Co">Contemporary</button>
-</div>
-<div class="mb-3">
-  <input type="text" id="songFilter" class="form-control" placeholder="Filter songs...">
-</div>
-    <div class="list-group" id="songList">
-      <a href="aint-no-mountain-high-enough.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Ain't No Mountain High Enough</a>
-      <a href="something-inside-so-strong.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Something Inside So Strong</a>
-      <a href="chain-reaction.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Chain Reaction</a>
-      <a href="drift-away.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Drift Away</a>
-      <a href="ho-hey.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Ho Hey</a>
-      <a href="lovely-day.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Lovely Day</a>
-      <a href="money-money-money.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Money Money Money</a>
-      <a href="no-place-id-rather-be.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>No Place I'd Rather Be</a>
-      <a href="roar.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Roar</a>
-      <a href="shackles-praise-you.html" class="list-group-item list-group-item-action"><span class="genre-label Co">Co</span>Shackles (Praise You)</a>
-      <a href="blitzens-boogie.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Blitzen's Boogie</a>
-      <a href="O-Holy-Night.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>O Holy Night</a>
-      <a href="silent-night.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Silent Night</a>
-      <a href="war-is-over.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Happy Christmas (War is Over)</a>
-      <a href="have-yourself-a-merry-little-christmas.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Have Yourself a Merry Little Christmas</a>
-      <a href="i-wish-it-could-be-christmas-everyday.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>I Wish It Could Be Christmas Everyday</a>
-      <a href="jingle-bells.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Jingle Bells</a>
-      <a href="rudolph-the-red-nosed-reindeer.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Rudolph the Red-Nosed Reindeer</a>
-      <a href="o-come-all-ye-faithful.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>O Come All Ye Faithful</a>
-      <a href="winter-wonderland.html" class="list-group-item list-group-item-action"><span class="genre-label X">X</span>Winter Wonderland</a>
-      <a href="what-the-lord-has-done-in-me.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>What the Lord Has Done in Me (Hosanna)</a>
-      <a href="put-a-little-love-in-your-heart.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Put a Little Love in Your Heart</a>
-      <a href="stronghold.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Stronghold</a>
-      <a href="no-ways-tired.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>No Ways Tired</a>
-      <a href="jesus-promised.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Jesus Promised</a> 
-      <a href="my-life-in-your-hands.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>My Life in Your Hands</a> 
-      <a href="over-my-head.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Over my head</a> 
-      <a href="glory-glory.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Glory Glory</a> 
-      <a href="amazing-grace.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Amazing Grace</a> 
-      <a href="all-we-ask.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>All We Ask</a> 
-      <a href="goodness-of-god.html" class="list-group-item list-group-item-action"><span class="genre-label G">G</span>Goodness of God</a>
-      <!-- Add more songs as needed -->
-       </div>
-       </div>
+        <h2 class="mb-4">All Songs</h2>
+        <div class="btn-group mb-3 d-flex-row" role="group" aria-label="Genre filter">
+          <button type="button" class="btn btn-outline-primary" data-genre="all">All</button>
+          <button type="button" class="btn btn-outline-primary" data-genre="X">Christmas</button>
+          <button type="button" class="btn btn-outline-primary" data-genre="G">Gospel</button>
+          <button type="button" class="btn btn-outline-primary" data-genre="Co">Contemporary</button>
+        </div>
+        <div class="mb-3">
+          <input type="text" id="songFilter" class="form-control" placeholder="Filter songs...">
+        </div>
+        <div class="list-group" id="songList"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    // Simple filter for the song list
-    document.getElementById('songFilter').addEventListener('input', function() {
-      const filter = this.value.toLowerCase();
-      document.querySelectorAll('#songList a').forEach(function(item) {
-        item.style.display = item.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    // Everything on this page is built from songs.json (performance list keeps its order)
+    const esc = s => String(s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const rank = s => s.genre === 'X' ? 0 : 1; // Christmas first, then alphabetical
+    const byTitle = (a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title);
+    const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}">${esc(s.genre)}</span>${esc(s.title)}</a>`;
+
+    let selectedGenre = 'all';
+    const songFilterInput = document.getElementById('songFilter');
+    const genreButtons = document.querySelectorAll('[data-genre]');
+
+    function applyFilters() {
+      const text = songFilterInput.value.toLowerCase();
+      document.querySelectorAll('#songList a').forEach(item => {
+        const genre = item.querySelector('.genre-label')?.textContent.trim() || 'Co';
+        const ok = (selectedGenre === 'all' || genre === selectedGenre) &&
+                   item.textContent.toLowerCase().includes(text);
+        item.style.display = ok ? '' : 'none';
       });
+      genreButtons.forEach(b => b.classList.toggle('active', b.dataset.genre === selectedGenre));
+    }
+    genreButtons.forEach(b => b.addEventListener('click', () => { selectedGenre = b.dataset.genre; applyFilters(); }));
+    songFilterInput.addEventListener('input', applyFilters);
+
+    fetch('songs.json').then(r => r.json()).then(data => {
+      const bySlug = Object.fromEntries(data.songs.map(s => [s.slug, s]));
+      document.getElementById('songList').innerHTML = [...data.songs].sort(byTitle).map(link).join('');
+      document.getElementById('performanceList').innerHTML =
+        data.performance.map(sl => bySlug[sl]).filter(Boolean).map(link).join('');
+      applyFilters();
+    }).catch(e => {
+      console.error(e);
+      document.getElementById('songList').innerHTML = '<div class="alert alert-danger">Could not load songs.json. If you opened this file directly, run <code>python3 -m http.server</code>.</div>';
     });
-
-    // Sort both lists alphabetically
-    function sortList(listId) {
-      const list = document.getElementById(listId);
-      if (!list) return; // Guard clause if element doesn't exist
-      
-      const items = [...list.children].sort((a, b) =>
-        a.textContent.localeCompare(b.textContent)
-      );
-      list.innerHTML = items.map(item => item.outerHTML).join('');
-    }
-
-    function sortAllLists() {
-      sortList('songList');
-      sortList('performanceList');
-    }
-
-    // Call on page load
-    window.addEventListener('DOMContentLoaded', sortAllLists);
-
-    const buttons = document.querySelectorAll('[data-genre]');
-const songFilterInput = document.getElementById('songFilter');
-
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    const genre = button.getAttribute('data-genre');
-    filterSongs(genre, songFilterInput.value);
-  });
-});
-
-songFilterInput.addEventListener('input', () => {
-  // When typing filter, it assumes show all genres with text filter
-  filterSongs('all', songFilterInput.value);
-});
-
-function filterSongs(selectedGenre, textFilter) {
-  const filterText = textFilter.toLowerCase();
-  document.querySelectorAll('#songList a').forEach(item => {
-    const genreLabel = item.querySelector('.genre-label')?.textContent || 'Co'; // default to Co if missing
-    const matchesGenre = selectedGenre === 'all' || genreLabel === selectedGenre;
-    const matchesText = item.textContent.toLowerCase().includes(filterText);
-    item.style.display = (matchesGenre && matchesText) ? '' : 'none';
-  });
-}
   </script>
-  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </main>
-
 </body>
 </html>

@@ -1,0 +1,21 @@
+{
+  "title": "Money Money Money",
+  "videos": [
+    {
+      "id": "ETxmCCsMoD0",
+      "title": "Money Money Money"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Practice Recording (All)",
+          "file": "practice-recording-all.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

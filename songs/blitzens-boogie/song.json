@@ -1,0 +1,21 @@
+{
+  "title": "Blitzen's Boogie",
+  "videos": [
+    {
+      "id": "-KbG1NEpKZw",
+      "title": "Blitzen's Boogie"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Goodness of God",
+  "videos": [],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "All Tracks Mixed",
+          "file": "all-tracks-mixed.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Line Tapes (Starting from after solo)",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

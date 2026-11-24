@@ -1,0 +1,29 @@
+{
+  "title": "Put a Little Love in Your Heart",
+  "videos": [
+    {
+      "id": "CZ8K1sRibCY",
+      "title": "Put a Little Love in Your Heart"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

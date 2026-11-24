@@ -1,0 +1,29 @@
+{
+  "title": "Ain't No Mountain High Enough",
+  "videos": [
+    {
+      "id": "rHVg-R6xh_0",
+      "title": "Ain't No Mountain High Enough"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        },
+        {
+          "label": "Practice Recording (All)",
+          "file": "practice-recording-all.mp3"
+        },
+        {
+          "label": "Practice Recording (Men Focused)",
+          "file": "practice-recording-men-focused.m4a"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

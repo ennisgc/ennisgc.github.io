@@ -1,0 +1,16 @@
+{
+  "title": "Amazing Grace",
+  "videos": [],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Practice Recording (All)",
+          "file": "practice-recording-all.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

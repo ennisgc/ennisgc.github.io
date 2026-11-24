@@ -1,0 +1,38 @@
+{
+  "title": "Winter Wonderland",
+  "videos": [
+    {
+      "id": "GP5_dJUd3BY",
+      "title": "Winter Wonderland"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

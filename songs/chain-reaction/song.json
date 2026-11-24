@@ -1,0 +1,46 @@
+{
+  "title": "Chain Reaction",
+  "videos": [
+    {
+      "id": "o7Fu2xbXjDk",
+      "title": "Chain Reaction"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        },
+        {
+          "label": "Practice Recording (All)",
+          "file": "practice-recording-all.mp3"
+        },
+        {
+          "label": "Practice Recording (Men Focused)",
+          "file": "practice-recording-men-focused.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

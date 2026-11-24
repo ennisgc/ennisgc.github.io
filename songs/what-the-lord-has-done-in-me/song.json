@@ -1,0 +1,33 @@
+{
+  "title": "What The Lord Has Done In Me (Hosanna)",
+  "videos": [
+    {
+      "id": "bFNfvvy2Lws",
+      "title": "What The Lord Has Done In Me (Hosanna)"
+    },
+    {
+      "id": "h7--kGfRVlg",
+      "title": "What The Lord Has Done In Me (Hosanna)"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

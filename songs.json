@@ -1,0 +1,189 @@
+{
+  "songs": [
+    {
+      "slug": "something-inside-so-strong",
+      "title": "Something Inside So Strong",
+      "genre": "Co"
+    },
+    {
+      "slug": "stronghold",
+      "title": "Stronghold",
+      "genre": "G"
+    },
+    {
+      "slug": "no-ways-tired",
+      "title": "No Ways Tired",
+      "genre": "G"
+    },
+    {
+      "slug": "over-my-head",
+      "title": "Over my head",
+      "genre": "G"
+    },
+    {
+      "slug": "glory-glory",
+      "title": "Glory Glory",
+      "genre": "G"
+    },
+    {
+      "slug": "amazing-grace",
+      "title": "Amazing Grace",
+      "genre": "G"
+    },
+    {
+      "slug": "all-we-ask",
+      "title": "All We Ask",
+      "genre": "G"
+    },
+    {
+      "slug": "goodness-of-god",
+      "title": "Goodness of God",
+      "genre": "G"
+    },
+    {
+      "slug": "aint-no-mountain-high-enough",
+      "title": "Ain't No Mountain High Enough",
+      "genre": "Co"
+    },
+    {
+      "slug": "chain-reaction",
+      "title": "Chain Reaction",
+      "genre": "Co"
+    },
+    {
+      "slug": "drift-away",
+      "title": "Drift Away",
+      "genre": "Co"
+    },
+    {
+      "slug": "ho-hey",
+      "title": "Ho Hey",
+      "genre": "Co"
+    },
+    {
+      "slug": "lovely-day",
+      "title": "Lovely Day",
+      "genre": "Co"
+    },
+    {
+      "slug": "money-money-money",
+      "title": "Money Money Money",
+      "genre": "Co"
+    },
+    {
+      "slug": "no-place-id-rather-be",
+      "title": "No Place I'd Rather Be",
+      "genre": "Co"
+    },
+    {
+      "slug": "roar",
+      "title": "Roar",
+      "genre": "Co"
+    },
+    {
+      "slug": "shackles-praise-you",
+      "title": "Shackles (Praise You)",
+      "genre": "Co"
+    },
+    {
+      "slug": "blitzens-boogie",
+      "title": "Blitzen's Boogie",
+      "genre": "X"
+    },
+    {
+      "slug": "o-holy-night",
+      "title": "O Holy Night",
+      "genre": "X"
+    },
+    {
+      "slug": "silent-night",
+      "title": "Silent Night",
+      "genre": "X"
+    },
+    {
+      "slug": "war-is-over",
+      "title": "Happy Christmas (War is Over)",
+      "genre": "X"
+    },
+    {
+      "slug": "have-yourself-a-merry-little-christmas",
+      "title": "Have Yourself a Merry Little Christmas",
+      "genre": "X"
+    },
+    {
+      "slug": "i-wish-it-could-be-christmas-everyday",
+      "title": "I Wish It Could Be Christmas Everyday",
+      "genre": "X"
+    },
+    {
+      "slug": "jingle-bells",
+      "title": "Jingle Bells",
+      "genre": "X"
+    },
+    {
+      "slug": "rudolph-the-red-nosed-reindeer",
+      "title": "Rudolph the Red-Nosed Reindeer",
+      "genre": "X"
+    },
+    {
+      "slug": "o-come-all-ye-faithful",
+      "title": "O Come All Ye Faithful",
+      "genre": "X"
+    },
+    {
+      "slug": "winter-wonderland",
+      "title": "Winter Wonderland",
+      "genre": "X"
+    },
+    {
+      "slug": "winter-song",
+      "title": "Winter Song",
+      "genre": "X"
+    },
+    {
+      "slug": "do-they-know-its-christmas",
+      "title": "Do They Know It's Christmas?",
+      "genre": "X"
+    },
+    {
+      "slug": "go-tell-it-on-the-mountain",
+      "title": "Go Tell It on the Mountain",
+      "genre": "X"
+    },
+    {
+      "slug": "what-the-lord-has-done-in-me",
+      "title": "What the Lord Has Done in Me (Hosanna)",
+      "genre": "G"
+    },
+    {
+      "slug": "put-a-little-love-in-your-heart",
+      "title": "Put a Little Love in Your Heart",
+      "genre": "G"
+    },
+    {
+      "slug": "jesus-promised",
+      "title": "Jesus Promised",
+      "genre": "G"
+    },
+    {
+      "slug": "my-life-in-your-hands",
+      "title": "My Life in Your Hands",
+      "genre": "G"
+    }
+  ],
+  "performance": [
+    "jingle-bells",
+    "rudolph-the-red-nosed-reindeer",
+    "blitzens-boogie",
+    "winter-song",
+    "i-wish-it-could-be-christmas-everyday",
+    "o-holy-night",
+    "silent-night",
+    "o-come-all-ye-faithful",
+    "war-is-over",
+    "do-they-know-its-christmas",
+    "winter-wonderland",
+    "have-yourself-a-merry-little-christmas",
+    "go-tell-it-on-the-mountain"
+  ]
+}

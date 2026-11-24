@@ -1,0 +1,38 @@
+{
+  "title": "Ho Hey",
+  "videos": [
+    {
+      "id": "zvCBSSwgtg4",
+      "title": "Ho Hey"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        },
+        {
+          "label": "Practice Recording (All)",
+          "file": "practice-recording-all.mp3"
+        },
+        {
+          "label": "Practice Recording (Men Focused)",
+          "file": "practice-recording-men-focused.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

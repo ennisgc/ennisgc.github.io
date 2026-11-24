@@ -1,0 +1,21 @@
+{
+  "title": "O Come All Ye Faithful",
+  "videos": [
+    {
+      "id": "1tM5pwvUGMI",
+      "title": "O Come All Ye Faithful"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Lovely Day",
+  "videos": [
+    {
+      "id": "bEeaS6fuUoA",
+      "title": "Lovely Day"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.mp3"
+        },
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.mp3"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}
