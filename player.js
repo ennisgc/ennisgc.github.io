@@ -2,6 +2,7 @@
 // Needs wavesurfer.js + its Regions plugin (loaded by song.js). If they are missing, the
 // plain <audio controls> players that song.js renders stay in place.
 (function () {
+  const BASE = (document.currentScript && document.currentScript.src || '').replace(/player\.js.*$/, ''); // site root, for help images
   const SPEEDS = [0.5, 0.6, 0.75, 0.9, 1, 1.1, 1.25];
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const MIN_SECTION = 0.3; // seconds; shorter drags are ignored
@@ -74,18 +75,13 @@
     const isLine = card.dataset.kind === 'line';
 
     const keys = (peaksEntry && peaksEntry.keys) || [];
-    // Overall key = the key that covers the most of the track; shown first, then where it changes.
+    // Just the first (opening) key section; later key changes are stored in peaks.json but not shown.
     let keyLine = '';
     if (keys.length) {
-      const dur = (peaksEntry && peaksEntry.duration) || 0;
-      const span = {};
-      keys.forEach((k, i) => { span[k.key] = (span[k.key] || 0) + ((keys[i + 1] ? keys[i + 1].start : dur || k.start + 1) - k.start); });
-      const main = keys.reduce((a, k) => (span[k.key] > span[a.key] ? k : a), keys[0]);
-      const hint = k => `Possible key: ${k.key} or ${k.rel} (they share the same notes). A best guess.`;
-      const seg = k => `<button type="button" class="key-seg" data-start="${k.start}" title="${hint(k)} Click to jump here."><span class="text-muted">${fmt(k.start)}</span> ${k.key} <span class="text-muted">/ ${k.rel}</span></button>`;
-      keyLine = `<div class="key-line small mt-2"><span class="text-muted">Possible key${keys.length > 1 ? ' (overall)' : ''}</span>
-        <span class="key-main" title="${hint(main)}">${main.key} <span class="text-muted">/ ${main.rel}</span></span>${
-        keys.length > 1 ? `<span class="text-muted ms-2">Possible changes:</span>${keys.map(seg).join('<span class="text-muted">&rarr;</span>')}` : ''}</div>`;
+      const main = keys[0];
+      const hint = `Possible key: ${main.key} or ${main.rel} (they share the same notes). A best guess.`;
+      keyLine = `<div class="key-line small mt-2"><span class="text-muted">Possible key</span>
+        <span class="key-main" title="${hint}">${main.key} <span class="text-muted">/ ${main.rel}</span></span></div>`;
     }
     host.innerHTML = `
       <div class="wave" role="img" aria-label="Waveform of ${label.replace(/"/g, '')}"></div>
@@ -103,7 +99,8 @@
         </label>
       </div>
       <div class="loop-controls d-flex flex-wrap align-items-center gap-2 mt-2" role="group" aria-label="Loop controls">
-        <span class="loop-title">Loop controls</span>
+        <div class="loop-head"><span class="loop-title">Loop controls</span>
+          <button type="button" class="btn btn-link btn-sm p-0 loop-help">How to use</button></div>
         <button type="button" class="btn btn-outline-secondary btn-sm tapmode" aria-pressed="false" title="Turn on, then tap the start and the end of the section on the waveform">Tap to set</button>
         <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop on/off</button>
         <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear</button>
@@ -183,6 +180,7 @@
       refreshSectionUI();
     }
     tapBtn.addEventListener('click', () => setTapMode(!tapMode));
+    $('.loop-help').addEventListener('click', showLoopHelp);
     waveEl.addEventListener('pointerdown', e => { downX = e.clientX; });
     waveEl.addEventListener('click', e => {
       if (!tapMode || Math.abs(e.clientX - downX) > 4) return; // a drag is a drag-selection, not a tap
@@ -362,9 +360,6 @@
       }
     }
 
-    // Key line: click a key to jump to where it starts.
-    host.querySelectorAll('.key-seg').forEach(b => b.addEventListener('click', () => ws.setTime(parseFloat(b.dataset.start) || 0)));
-
     // Tap or hold a note button to hear it on the piano (sounds while held, like a key).
     const tapKey = 'player' + players.length;
     let tapping = false;
@@ -462,6 +457,44 @@
   }
 
   window.choirPlayers = players; // handy for debugging in the console
+
+  // One shared "How to loop" pop-up for every player on the page.
+  let helpModal = null;
+  function showLoopHelp() {
+    if (!helpModal) {
+      const el = document.createElement('div');
+      el.className = 'modal fade'; el.tabIndex = -1; el.setAttribute('aria-labelledby', 'loopHelpTitle'); el.setAttribute('aria-hidden', 'true');
+      const img = (f, alt) => `<img class="img-fluid border rounded my-2 d-block" src="${BASE}help/${f}" alt="${alt}" loading="lazy">`;
+      el.innerHTML = `<div class="modal-dialog modal-dialog-scrollable modal-lg"><div class="modal-content">
+        <div class="modal-header"><h2 class="modal-title h5" id="loopHelpTitle">How to loop a section</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body">
+          <p>Looping repeats one part of the track so you can practise it. Pick the section either way:</p>
+          <h3 class="h6">Option 1: drag on the waveform</h3>
+          <p class="mb-1">Press on the waveform where the section starts, drag to where it ends and let go. The shaded part is your section and it starts repeating straight away.</p>
+          ${img('loop-1-drag.png', 'A shaded section dragged across the waveform')}
+          <h3 class="h6 mt-4">Option 2: tap the start and the end (best on a phone)</h3>
+          <ol class="mb-1">
+            <li>Press <strong>Tap to set</strong> (it turns gold).</li>
+            <li>Tap the waveform where the section <strong>starts</strong>. A gold line marks it.</li>
+            ${img('loop-2-tap-start.png', 'A gold marker at the start, with the Tap to set button highlighted')}
+            <li>Tap where it <strong>ends</strong>. The section is shaded and starts repeating.</li>
+            ${img('loop-3-tap-end.png', 'The section shaded between the two taps')}
+          </ol>
+          <h3 class="h6 mt-4">The buttons</h3>
+          <ul>
+            <li><strong>Tap to set</strong>: on = your next two taps choose the section (the waveform won't jump around meanwhile). Press again to turn it off.</li>
+            <li><strong>Loop on/off</strong>: gold = repeating. Switch it off to play on past the end of the section.</li>
+            <li><strong>Clear</strong>: removes the section so the whole track plays again.</li>
+          </ul>
+          <p class="mb-0 text-muted small">Tips: the <strong>Speed</strong> menu slows a section down while you learn it. To change a section, just drag or tap a new one. Tapping the waveform when you are not in Tap to set jumps to that spot.</p>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+      </div></div>`;
+      document.body.appendChild(el);
+      helpModal = new bootstrap.Modal(el);
+    }
+    helpModal.show();
+  }
 
   window.initPlayers = function (peaks) {
     if (!window.WaveSurfer || !WaveSurfer.Regions) return;
