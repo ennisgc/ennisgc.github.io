@@ -54,7 +54,7 @@ If a CDN script fails, the plain `<audio>` controls remain and the page still wo
 - **Every track** has live pitch detection (YIN autocorrelation on a Web Audio `AnalyserNode`). It shows the last steady note as a button (stays on screen, dimmed, after pause) plus a strip of recent notes. Tapping or holding any note button plays that pitch on the piano sound via `choirKeyboard.hold()`. No tuning numbers are shown (deliberately): if the pitch is more than `UNSURE_CENTS` (30) from the nearest note, the name gets a `?` (e.g. `A3?`) because the reading is a guess; tapping it still plays the nearest note. The strip resets when a loop wraps. Detection (a single-note detector) is reliable on single-voice line tapes; on backing tracks and full-choir recordings (`data-kind="rec"`) it uses stricter settings (narrower range 80-800 Hz, higher confidence, a note must hold for 3 readings instead of 2) and shows the most prominent note, which is only a best guess, and many readings come out with a `?`. Real melody extraction from a mix would need a different approach.
 - `note-detected` events light the matching key on the keyboard.
 
-**Keyboard (`keyboard.js`)**: opens from the left. On screens >= 992 px it adds `body.keyboard-open`, which shifts the page right by the panel width (520 px) and stacks the lyrics under the players, so nothing is covered; on phones it is a full-screen overlay. 25 keys (two octaves, C to C), octave shift, volume, Sound selector (Piano default, Choir (ah), MIDI synth; remembered in `localStorage.keyboardInstrument`). Mouse, multi-touch with gliding, and computer keys (A W S E D F T G Y H U J K ...) when the panel is open. All sounds are synthesised with Web Audio, with no sample files. `LEVEL` in the file balances loudness between instruments (measured with an offline render via `choirKeyboard.renderTest`).
+**Keyboard (`keyboard.js`)**: opens from the left. On screens >= 992 px it adds `body.keyboard-open`, which shifts the page right by the panel width (520 px) and stacks the lyrics under the players, so nothing is covered; on phones it is a full-screen overlay. 25 keys (two octaves, C to C), octave shift, volume, Sound selector (Piano default, Choir (ah), MIDI synth; remembered in `localStorage.keyboardInstrument`). Mouse, multi-touch with gliding, and computer keys (A W S E D F T G Y H U J K ...) when the panel is open. Choir and MIDI are synthesised with Web Audio. The Piano uses real recordings (Salamander Grand, CC-BY 3.0, 1.4 MB in `samples/piano/`, one every minor third, pitch-shifted between, loaded when the browser is idle); until they load, or if they fail, it falls back to a synthesised piano (`buildSynthPiano`). `LEVEL` in the file balances loudness between instruments (measured with an offline render via `choirKeyboard.renderTest`).
 
 ## 3. Data formats
 
@@ -152,7 +152,6 @@ There is no test suite. Use this routine:
 ## 9. Possible future work (not done)
 
 - A GitHub Action running `tools/check.py` on every push (needs the `workflow` token scope).
-- A recorded-sample piano option for the keyboard (about 1-3 MB download).
 - Web MIDI input from a real keyboard.
 - One-time key detection per song for display (currently the nearest semitone is shown, deliberately not snapped to a key).
 - Missing content is listed live by `python3 tools/check.py` (videos, lyrics, audio).

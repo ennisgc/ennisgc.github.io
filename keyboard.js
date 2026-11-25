@@ -19,7 +19,7 @@
   // Every instrument is a function (ctx, out, midi, t0) -> { release(now) } built from Web Audio
   // nodes, so nothing needs downloading. LEVEL evens out loudness between instruments.
   const INSTRUMENTS = { piano: 'Piano', choir: 'Choir (ah)', midi: 'MIDI synth' };
-  const LEVEL = { piano: 0.4, choir: 0.4, midi: 1.0 };
+  const LEVEL = { piano: 0.5, choir: 0.4, midi: 1.0 };
   let instrument = localStorage.getItem('keyboardInstrument');
   if (!INSTRUMENTS[instrument]) instrument = 'piano'; // piano unless you picked another before
 
@@ -35,7 +35,7 @@
 
   // Piano: inharmonic partials that each decay at their own rate, two slightly detuned strings on
   // the lowest partials (gives the slow shimmer), and a short hammer thump.
-  function buildPiano(ctx, out, midi, t0) {
+  function buildSynthPiano(ctx, out, midi, t0) {
     const f0 = freq(midi);
     const voice = ctx.createGain();
     const tone = ctx.createBiquadFilter();
@@ -73,6 +73,55 @@
         voice.gain.setValueAtTime(voice.gain.value, now);
         voice.gain.setTargetAtTime(0, now, 0.07);
         oscs.forEach(o => o.stop(now + 0.6));
+      },
+    };
+  }
+
+  // Sampled piano (Salamander Grand, CC-BY 3.0, see samples/piano/README.txt): a real recording every
+  // minor third, pitch-shifted a few semitones to fill the gaps. Falls back to the synthesised piano
+  // above until the samples have loaded (or if they can't).
+  const SAMPLE_NOTES = {};
+  [['C', 0], ['Ds', 3], ['Fs', 6], ['A', 9]].forEach(([n, semi]) => {
+    for (let oct = 1; oct <= 6; oct++) {
+      const m = 12 * (oct + 1) + semi;
+      if ((oct === 1 && n !== 'A') || (oct === 6 && n !== 'C')) continue;
+      SAMPLE_NOTES[m] = `${n}${oct}`;
+    }
+  });
+  const sampleBuffers = {}; // midi -> AudioBuffer
+  const sampleGain = {};    // midi -> factor that brings every recording to the same peak level
+  const normaliser = buf => {
+    let peak = 0;
+    for (let c = 0; c < buf.numberOfChannels; c++) { const d = buf.getChannelData(c); for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i])); }
+    return peak ? 1 / peak : 1;
+  };
+  let samplesState = 'idle';
+  function loadPianoSamples() {
+    if (samplesState !== 'idle') return;
+    samplesState = 'loading';
+    const ctx = getCtx();
+    const base = new URL('samples/piano/', document.querySelector('script[src$="keyboard.js"]').src).href;
+    Promise.all(Object.entries(SAMPLE_NOTES).map(([m, name]) =>
+      fetch(base + name + '.mp3').then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b))
+        .then(buf => { sampleBuffers[m] = buf; sampleGain[m] = normaliser(buf); })))
+      .then(() => { samplesState = 'ready'; })
+      .catch(e => { samplesState = 'failed'; console.warn('Piano samples unavailable, using synthesised piano', e); });
+  }
+  function buildPiano(ctx, out, midi, t0) {
+    const keys = Object.keys(sampleBuffers).map(Number);
+    if (samplesState !== 'ready' || !keys.length) return buildSynthPiano(ctx, out, midi, t0);
+    const root = keys.reduce((a, b) => Math.abs(b - midi) < Math.abs(a - midi) ? b : a);
+    const src = ctx.createBufferSource(), env = ctx.createGain();
+    src.buffer = sampleBuffers[root];
+    src.playbackRate.value = Math.pow(2, (midi - root) / 12);
+    env.gain.value = sampleGain[root];
+    src.connect(env); env.connect(out); src.start(t0);
+    return {
+      release(now) { // damper falls on the strings
+        env.gain.cancelScheduledValues(now);
+        env.gain.setValueAtTime(env.gain.value, now);
+        env.gain.setTargetAtTime(0, now, 0.12);
+        src.stop(now + 1.2);
       },
     };
   }
@@ -312,5 +361,6 @@
   const hold = (id, midi) => noteOn('ref-' + id, midi, 'piano');
   const releaseRef = id => noteOff('ref-' + id);
 
-  window.choirKeyboard = { hold, release: releaseRef, activeCount: () => voices.size, activeInstruments: () => [...voices.values()].map(v => v.inst), get start() { return start; }, get instrument() { return instrument; }, renderTest };
+  (window.requestIdleCallback || setTimeout)(loadPianoSamples);
+  window.choirKeyboard = { samplesReady: () => samplesState, hold, release: releaseRef, activeCount: () => voices.size, activeInstruments: () => [...voices.values()].map(v => v.inst), get start() { return start; }, get instrument() { return instrument; }, renderTest };
 })();

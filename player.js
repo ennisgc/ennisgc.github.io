@@ -87,6 +87,7 @@
         </label>
       </div>
       <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm tapmode" aria-pressed="false" title="Tap the start, then tap the end, on the waveform">Tap start / end</button>
         <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop section</button>
         <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear section</button>
         <span class="small text-muted section-info">Drag on the waveform to pick a section to repeat.</span>
@@ -122,6 +123,7 @@
     const self = { ws, audio, pause: () => ws.pause() };
     let region = null;
     let loop = false;
+    let tapMode = false, pendingStart = null, marker = null, downX = 0;
     const loopBtn = $('.loop'), clearBtn = $('.clear'), info = $('.section-info'), timeEl = $('.time');
 
     const total = () => ws.getDuration() || (peaksEntry && peaksEntry.duration) || 0;
@@ -135,13 +137,59 @@
       loopBtn.setAttribute('aria-pressed', String(loop));
       info.textContent = region
         ? `Section ${fmt(region.start)} - ${fmt(region.end)}${loop ? ' (repeating)' : ''}`
-        : 'Drag on the waveform to pick a section to repeat.';
+        : tapHint();
+    }
+    function tapHint() {
+      if (!tapMode) return 'Drag on the waveform to pick a section to repeat, or use Tap start / end.';
+      return pendingStart === null ? 'Tap the waveform where the section starts.'
+        : `Start ${fmt(pendingStart)}. Now tap where it ends.`;
     }
     function setLoop(on) { loop = on; refreshSectionUI(); }
+    function clearMarker() { pendingStart = null; if (marker) { marker.remove(); marker = null; } }
     function clearSection() {
+      clearMarker();
       regions.getRegions().forEach(r => r.remove());
       region = null; loop = false; refreshSectionUI();
     }
+
+    // Tap mode: first tap sets the start, second tap sets the end and starts the loop.
+    const waveEl = $('.wave'), tapBtn = $('.tapmode');
+    function setTapMode(on) {
+      tapMode = on;
+      if (!on) clearMarker();
+      ws.setOptions({ interact: !on }); // in tap mode a tap marks a point instead of seeking
+      tapBtn.classList.toggle('btn-warning', on);
+      tapBtn.classList.toggle('btn-outline-secondary', !on);
+      tapBtn.setAttribute('aria-pressed', String(on));
+      refreshSectionUI();
+    }
+    tapBtn.addEventListener('click', () => setTapMode(!tapMode));
+    waveEl.addEventListener('pointerdown', e => { downX = e.clientX; });
+    waveEl.addEventListener('click', e => {
+      if (!tapMode || Math.abs(e.clientX - downX) > 4) return; // a drag is a drag-selection, not a tap
+      const rect = waveEl.getBoundingClientRect();
+      const t = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * total();
+      if (pendingStart === null) {
+        regions.getRegions().forEach(r => r.remove()); // starting a new section
+        pendingStart = t;
+        marker = document.createElement('div');
+        marker.className = 'wave-marker';
+        marker.style.left = (t / total() * 100) + '%';
+        waveEl.appendChild(marker);
+        refreshSectionUI();
+        return;
+      }
+      const a = Math.min(pendingStart, t), b = Math.max(pendingStart, t);
+      if (b - a < MIN_SECTION) { clearMarker(); pendingStart = t; return; }
+      clearMarker();
+      regions.addRegion({ start: a, end: b, color: 'rgba(190, 159, 87, 0.35)' }); // 'region-created' starts the loop
+    });
+
+    // Load the audio as soon as the pointer is over the player (or it is touched or focused),
+    // so playing and looping start without a download delay.
+    let warmed = false;
+    const warm = () => { if (!warmed) { warmed = true; audio.preload = 'auto'; audio.load(); } };
+    ['pointerenter', 'touchstart', 'focusin'].forEach(ev => card.addEventListener(ev, warm, { passive: true }));
 
     // A drag on the waveform fires 'region-created' once the drag ends; resizing or moving an
     // existing section fires 'region-updated'.

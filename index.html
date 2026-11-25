@@ -26,7 +26,7 @@
             <div class="row g-3">
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Content</h3>
-                <ul class="mb-0">
+                <ul class="mb-0 update-list">
                   <li><span class="text-muted me-1">25 Nov</span> Added the Winter Song soprano line tape.</li>
                   <li><span class="text-muted me-1">25 Nov</span> The note heard is now a button on every track (accurate on line tapes, a best guess on backing tracks): tap or hold it to hear that note on piano. Recent notes appear beside it so you can tap back through a phrase.</li>
                   <li><span class="text-muted me-1">25 Nov</span> New audio players: waveform, drag to select a section and repeat it, speed control (0.5x-1.25x), and the last note heard on line tapes.</li>
@@ -41,7 +41,7 @@
               </div>
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
-                <ul class="mb-0">
+                <ul class="mb-0 update-list">
                   <li><span class="text-muted me-1">25 Nov</span> Players and keyboard are plain JavaScript (<code>player.js</code>, <code>keyboard.js</code>) plus wavesurfer.js. Waveforms come from <code>peaks.json</code> in each song folder, so audio only downloads when you press play.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Re-encoded four line tapes whose audio stream was damaged and wouldn't play in Firefox. <code>check.py --deep</code> now finds these.</li>
                   <li><span class="text-muted me-1">25 Nov</span> All audio is now 128 kbps or lower (about 109 MB smaller, so pages load faster). New audio is compressed automatically, and <code>check.py</code> flags anything over the limit.</li>
@@ -68,7 +68,7 @@
             <div class="table-responsive">
               <table class="table table-sm table-bordered text-center align-middle mb-0 status-table">
                 <thead>
-                  <tr><th class="text-start">Song</th><th>Backing</th><th>Recording</th><th>Soprano LT</th><th>Alto LT</th><th>Men LT</th><th>Video</th><th>Lyrics</th></tr>
+                  <tr><th class="text-start sortable" tabindex="0" aria-sort="none">Song</th><th class="sortable" tabindex="0" aria-sort="none">Backing</th><th class="sortable" tabindex="0" aria-sort="none">Recording</th><th class="sortable" tabindex="0" aria-sort="none">Soprano LT</th><th class="sortable" tabindex="0" aria-sort="none">Alto LT</th><th class="sortable" tabindex="0" aria-sort="none">Men LT</th><th class="sortable" tabindex="0" aria-sort="none">Video</th><th class="sortable" tabindex="0" aria-sort="none">Lyrics</th></tr>
                 </thead>
                 <tbody id="statusRows"><tr><td colspan="8">Loading…</td></tr></tbody>
               </table>
@@ -142,13 +142,30 @@
             (song.videos || []).length > 0,
             lyrics.trim().length > 40
           ];
-          return `<tr><td class="text-start"><a href="${base}">${esc(s.title)}</a></td>${
-            flags.map(f => `<td class="${f ? 'status-yes' : 'status-no'}">${f ? 'Yes' : 'No'}</td>`).join('')}</tr>`;
+          return { title: s.title, flags, html: `<tr><td class="text-start"><a href="${base}">${esc(s.title)}</a></td>${
+            flags.map(f => `<td class="${f ? 'status-yes' : 'status-no'}">${f ? 'Yes' : 'No'}</td>`).join('')}</tr>` };
         } catch (e) {
-          return `<tr><td class="text-start">${esc(s.title)}</td><td colspan="7" class="status-no">Could not load</td></tr>`;
+          return { title: s.title, flags: [], html: `<tr><td class="text-start">${esc(s.title)}</td><td colspan="7" class="status-no">Could not load</td></tr>` };
         }
       }));
-      document.getElementById('statusRows').innerHTML = rows.join('');
+      const body = document.getElementById('statusRows');
+      const heads = [...document.querySelectorAll('.status-table th.sortable')];
+      const draw = () => { body.innerHTML = rows.map(r => r.html).join(''); };
+      function sortBy(col, dir) {
+        // column 0 = song title; others = Yes/No (Yes first when ascending). Ties keep alphabetical order.
+        rows.sort((a, b) => {
+          const d = col === 0 ? byTitle(a, b) : (b.flags[col - 1] ? 1 : 0) - (a.flags[col - 1] ? 1 : 0);
+          return (d * dir) || byTitle(a, b);
+        });
+        heads.forEach((h, i) => h.setAttribute('aria-sort', i === col ? (dir > 0 ? 'ascending' : 'descending') : 'none'));
+        draw();
+      }
+      heads.forEach((h, i) => {
+        const go = () => sortBy(i, h.getAttribute('aria-sort') === 'ascending' ? -1 : 1);
+        h.addEventListener('click', go);
+        h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      });
+      draw();
     }
 
     fetch('songs.json').then(r => r.json()).then(data => {

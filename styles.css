@@ -104,7 +104,9 @@ audio {
 .status-table .status-no { background-color: #f8d7da; }
 
 /* Audio player */
+.wave-marker { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: #BE9F57; pointer-events: none; z-index: 5; }
 .player-host .wave {
+  position: relative;
   cursor: pointer;
   border-radius: 0.25rem;
   background: #f4f5ff;
@@ -219,3 +221,12 @@ audio {
 .piano .key.black.down { background: var(--lightblue); }
 .piano .key.white.detected { box-shadow: inset 0 -10px 0 var(--gold); }
 .piano .key.black.detected { box-shadow: inset 0 -8px 0 var(--gold); }
+
+/* Latest Updates: about 7 lines, then scroll */
+.update-list { max-height: 10.5rem; overflow-y: auto; padding-right: 0.5rem; }
+
+/* Song Status: click a heading to sort */
+.status-table th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.status-table th.sortable:hover { background: #eef0ff; }
+.status-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: 0.7em; }
+.status-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: 0.7em; }
