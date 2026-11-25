@@ -102,10 +102,13 @@
           </select>
         </label>
       </div>
+      <div class="loop-controls d-flex flex-wrap align-items-center gap-2 mt-2" role="group" aria-label="Loop controls">
+        <span class="loop-title">Loop controls</span>
+        <button type="button" class="btn btn-outline-secondary btn-sm tapmode" aria-pressed="false" title="Turn on, then tap the start and the end of the section on the waveform">Tap to set</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop on/off</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear</button>
+      </div>
       <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-        <button type="button" class="btn btn-outline-secondary btn-sm tapmode" aria-pressed="false" title="Tap the start, then tap the end, on the waveform">Tap start / end</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop section</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear section</button>
         <span class="small text-muted section-info">Drag on the waveform to pick a section to repeat.</span>
         ${isLine ? `<div class="note-area ms-auto d-flex align-items-center flex-wrap justify-content-end gap-2">
           <button type="button" class="btn btn-link btn-sm p-0 clear-notes" disabled>Clear notes</button>
@@ -156,7 +159,7 @@
         : tapHint();
     }
     function tapHint() {
-      if (!tapMode) return 'Drag on the waveform to pick a section to repeat, or use Tap start / end.';
+      if (!tapMode) return 'Drag on the waveform to pick a section to repeat, or use Tap to set.';
       return pendingStart === null ? 'Tap the waveform where the section starts.'
         : `Start ${fmt(pendingStart)}. Now tap where it ends.`;
     }

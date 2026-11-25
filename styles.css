@@ -78,12 +78,13 @@ audio {
   .lyrics-toolbar { padding: 0 0 0.5rem; border-bottom: 0; }
 
   /* let the row reach the very bottom of the page so the sticky lyrics panel (and its A+ / A- bar) is never pushed up at the end */
-  .song-layout { margin-bottom: -3rem; }
+  .song-layout { margin-bottom: calc(-1 * var(--page-end)); }
+  .song-main { padding-bottom: var(--page-end); } /* the page-end space sits inside the row so the sticky lyrics panel isn't pushed */
 
   .lyrics-panel .offcanvas-body {
     display: block;
     padding: 1rem;
-    max-height: calc(100vh - 5rem); /* leaves room for the A+ / A- bar above */
+    max-height: calc(100vh - 8rem); /* leaves room for the A+ / A- bar above and a clear gap below */
     overflow-y: auto;
     border: 1px solid var(--lightestblue);
     border-radius: 0.5rem;
@@ -278,3 +279,12 @@ audio {
 }
 .lane-readout.on { opacity: 1; }
 .key-main { font-weight: 600; }
+.report-icon { margin-right: 0.4em; vertical-align: -0.12em; }
+
+/* White space at the bottom of every page so it's clear it is the end */
+:root { --page-end: 5rem; }
+main.pb-5, main { padding-bottom: var(--page-end) !important; } /* beats Bootstrap's .pb-5 */
+
+/* Loop controls: the three loop buttons grouped under a label */
+.loop-controls { padding: 0.35rem 0.6rem; background: #fbfbff; border: 1px solid var(--lightestblue); border-radius: 0.375rem; }
+.loop-title { font-size: 0.8rem; font-weight: 700; color: var(--navy, #00006d); margin-right: 0.25rem; }
