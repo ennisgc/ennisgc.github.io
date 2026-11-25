@@ -295,3 +295,13 @@ main.pb-5, main { padding-bottom: var(--page-end) !important; } /* beats Bootstr
 .loop-head { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; margin-right: 0.25rem; }
 .loop-head .loop-title { margin-right: 0; }
 .loop-help { font-size: 0.75rem; }
+
+/* Keyboard: easier to tap on phones */
+.key-readout { height: 2.6rem; text-align: center; font: 700 1.9rem/2.6rem "Roboto Mono", monospace; color: var(--navy); opacity: 0.25; transition: opacity 0.1s; }
+.key-readout.on { opacity: 1; }
+.piano .key.black::before { content: ""; position: absolute; inset: 0 -4px -10px; } /* invisible, bigger touch target */
+@media (max-width: 767.98px) {
+  .piano { height: 270px; }
+  .piano .key.white { font-size: 0.8rem; }
+  .keyboard-panel .oct-down, .keyboard-panel .oct-up { padding: 0.45rem 0.9rem; font-size: 1rem; }
+}

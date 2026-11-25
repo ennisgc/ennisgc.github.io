@@ -1,10 +1,12 @@
-// Two-octave tappable keyboard in an offcanvas that slides in from the left.
+// Tappable keyboard (two octaves; just over one on phones so the keys are bigger) in an offcanvas that slides in from the left.
 // Works with the mouse, touch (several fingers at once, and gliding) and the computer keyboard.
 (function () {
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const BLACK = new Set([1, 3, 6, 8, 10]);
-  const KEYS = 25;                 // C to C, two octaves
-  const MIN_START = 24, MAX_START = 60; // lowest C is C1..C4
+  const narrow = window.matchMedia('(max-width: 767.98px)'); // phones: fewer, bigger keys
+  let KEYS = narrow.matches ? 15 : 25;   // C to D (9 white keys, 15 notes) on phones, C to C (two octaves) otherwise
+  const MIN_START = 24;                  // lowest C is C1
+  const maxStart = () => (narrow.matches ? 72 : 60);
   const COMPUTER_KEYS = 'awsedftgyhujkolp;'.split(''); // a=C ... ;=E (one octave and a bit)
 
   const getCtx = () => (window.__choirCtx ||= new (window.AudioContext || window.webkitAudioContext)());
@@ -257,6 +259,7 @@
           <input type="range" class="form-range vol" min="0" max="1" step="0.05" value="${volume}" style="width: 7rem">
         </label>
       </div>
+      <div class="key-readout" aria-live="polite" aria-atomic="true"><span class="key-readout-note">&nbsp;</span></div>
       <div class="piano" role="group" aria-label="Piano keyboard"></div>
       <p class="small text-muted mt-3 mb-1 detected" aria-live="polite">Play a line tape and the note it is singing lights up here.</p>
       <p class="small text-muted mb-0">Computer keys: <kbd>A</kbd> <kbd>W</kbd> <kbd>S</kbd> <kbd>E</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>T</kbd> <kbd>G</kbd> <kbd>Y</kbd> <kbd>H</kbd> <kbd>U</kbd> <kbd>J</kbd> <kbd>K</kbd> play from the lowest C.</p>
@@ -264,6 +267,7 @@
   document.body.appendChild(panel);
 
   const piano = panel.querySelector('.piano');
+  const readout = panel.querySelector('.key-readout-note');
   const rangeLabel = panel.querySelector('.range-label');
   const detectedLabel = panel.querySelector('.detected');
 
@@ -287,18 +291,20 @@
       k.className = 'key black';
       k.dataset.midi = m;
       k.setAttribute('aria-label', name(m));
-      k.style.width = w * 0.6 + '%';
-      k.style.left = whiteIndex * w - w * 0.3 + '%';
+      const bw = narrow.matches ? 0.68 : 0.6; // wider black keys on phones
+      k.style.width = w * bw + '%';
+      k.style.left = whiteIndex * w - w * bw / 2 + '%';
       piano.appendChild(k);
     }
     rangeLabel.textContent = `${name(start)} to ${name(start + KEYS - 1)}`;
     panel.querySelector('.oct-down').disabled = start <= MIN_START;
-    panel.querySelector('.oct-up').disabled = start >= MAX_START;
+    panel.querySelector('.oct-up').disabled = start >= maxStart();
   }
   function keyEl(midi) { return piano.querySelector(`.key[data-midi="${midi}"]`); }
   function light(midi, on) { const k = keyEl(midi); if (k) k.classList.toggle('down', on); }
 
-  function shift(delta) { allOff(); start = Math.min(MAX_START, Math.max(MIN_START, start + delta)); build(); }
+  function shift(delta) { allOff(); start = Math.min(maxStart(), Math.max(MIN_START, start + delta)); build(); }
+  narrow.addEventListener('change', () => { allOff(); KEYS = narrow.matches ? 15 : 25; start = Math.min(start, maxStart()); build(); });
   panel.querySelector('.oct-down').addEventListener('click', () => shift(-12));
   panel.querySelector('.oct-up').addEventListener('click', () => shift(12));
   panel.querySelector('.instrument').addEventListener('change', e => {
@@ -310,6 +316,8 @@
   build();
 
   // ---------- pointer input (mouse + multi-touch + gliding) ----------
+  // Big note name above the keys while a finger is down, so you can see what you hit even when it covers the key.
+  const show = midi => { readout.textContent = name(midi); readout.parentElement.classList.add('on'); };
   const keyAt = (x, y) => {
     const el = document.elementFromPoint(x, y);
     const k = el && el.closest && el.closest('.piano .key');
@@ -320,14 +328,18 @@
     if (midi == null) return;
     e.preventDefault();
     noteOn('p' + e.pointerId, midi);
+    show(midi);
   });
   piano.addEventListener('pointermove', e => {
     const v = voices.get('p' + e.pointerId);
     if (!v) return;
     const midi = keyAt(e.clientX, e.clientY);
-    if (midi != null && midi !== v.midi) noteOn('p' + e.pointerId, midi); // glide to the next key
+    if (midi != null && midi !== v.midi) { noteOn('p' + e.pointerId, midi); show(midi); } // glide to the next key
   });
-  const release = e => noteOff('p' + e.pointerId);
+  const release = e => {
+    noteOff('p' + e.pointerId);
+    if (![...voices.keys()].some(id => id.startsWith('p'))) readout.parentElement.classList.remove('on');
+  };
   window.addEventListener('pointerup', release);
   window.addEventListener('pointercancel', release);
   piano.addEventListener('contextmenu', e => e.preventDefault());
