@@ -19,10 +19,13 @@ songs/<slug>/         ONE FOLDER PER SONG (this is where almost all content live
     peaks.json        Pre-computed waveform data for the audio above (generated, do not hand-edit).
 songs/_template/      Copy this to start a song (or use tools/add-song.py).
 song.js               Renders a song page from song.json + lyrics.txt (+ loads the player/keyboard).
-player.js             Audio players: waveform, loop a section, speed, note detection, tap-a-note.
+player.js             Audio players: waveform, loop a section (drag or tap; "How to use" pop-up), speed, note lane, possible key (first key only), tap-a-note.
 keyboard.js           Keyboard in a left-hand offcanvas (two octaves; 15 notes on phones for bigger keys; big note readout; piano / choir / MIDI sounds).
 script.js             Lyrics text-size buttons (A+, A-, Reset). Called by song.js.
 styles.css            All custom CSS (Bootstrap 5.3.2 supplies the rest).
+help/                 Screenshots used by the "How to use" loop pop-up (player.js). Retake them if the player's look changes.
+samples/piano/        Piano note samples for the keyboard (CC-BY, see its README.txt).
+temp/                 Scratch folder for raw files waiting to be added (not committed; delete after use).
 santa-hat.svg         Icon for Christmas genre chips (used instead of an emoji; see "Gotchas").
 *.html (root)         Old-URL redirect stubs, e.g. jingle-bells.html -> songs/jingle-bells/. Keep them.
 tools/                Python maintenance scripts (see section 5).
