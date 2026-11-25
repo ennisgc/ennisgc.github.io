@@ -28,7 +28,12 @@
                 <h3 class="h6 fw-bold">Content</h3>
                 <ul class="mb-0 update-list">
                   <li><span class="text-muted me-1">25 Nov</span> Added the Winter Song soprano line tape.</li>
-                  <li><span class="text-muted me-1">25 Nov</span> The note heard is now a button on every track (accurate on line tapes, a best guess on backing tracks): tap or hold it to hear that note on piano. Recent notes appear beside it so you can tap back through a phrase.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Every track now shows a <strong>possible key</strong>: the overall key, plus where it seems to change (click one to jump there). It is a best guess; major and its relative minor look the same, so both are shown.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Line tapes show a <strong>note lane</strong> under the waveform: the possible notes heard, as bars you can tap or hold to hear on piano. Only the note name is shown, because the octave is too often wrong. Backing tracks no longer try to name notes (they were unreliable).</li>
+                  <li><span class="text-muted me-1">25 Nov</span> The keyboard piano now uses real piano recordings instead of a synthesised sound.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Audio players: <em>Tap start / end</em> sets a loop by tapping two points on the waveform (dragging still works), and a track starts loading as soon as you point at it, so play and loop start without a delay.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Lyrics: the A+ / A- / Reset buttons stay fixed at the top of the lyrics, bold part labels (S A M) now show properly in O Holy Night, Winter Wonderland, War Is Over, Silent Night and Something Inside So Strong, and a few O Holy Night typos are fixed.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Latest Updates now scrolls (about 7 lines), and the Song Status table sorts when you click a heading.</li>
                   <li><span class="text-muted me-1">25 Nov</span> New audio players: waveform, drag to select a section and repeat it, speed control (0.5x-1.25x), and the last note heard on line tapes.</li>
                   <li><span class="text-muted me-1">25 Nov</span> New 2-octave keyboard (button at the top of each song page) that slides in from the left. Tap, slide, or use your computer keyboard. Sounds: Piano (default), Choir (ah) or MIDI synth.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Added line tapes: Winter Song (alto, men) and Go Tell It on the Mountain (alto, men &amp; soprano).</li>
@@ -42,6 +47,9 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
                 <ul class="mb-0 update-list">
+                  <li><span class="text-muted me-1">25 Nov</span> Keys come from <code>tools/audio.py</code> (<code>compute_keys</code>, needs numpy) and are stored in each track's <code>peaks.json</code> entry; <code>make-peaks.py</code> and <code>check.py</code> treat a missing key as out of date. Piano samples (Salamander Grand, CC-BY) are in <code>samples/piano/</code>.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Note detection is line tapes only, with a per-voice pitch range, notes stored per 0.1 s slot as note names, and bar height from a tracked octave (details in <code>README.md</code>). Lyrics allow <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> only; everything else is escaped.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Wrote <code>README.md</code> for people and AI agents (how the site works, data formats, tools, gotchas). Measured note detection: about 90% of windows on clean line tapes, 15-25% on piano+voice tapes, about 7% on backing tracks.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Players and keyboard are plain JavaScript (<code>player.js</code>, <code>keyboard.js</code>) plus wavesurfer.js. Waveforms come from <code>peaks.json</code> in each song folder, so audio only downloads when you press play.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Re-encoded four line tapes whose audio stream was damaged and wouldn't play in Firefox. <code>check.py --deep</code> now finds these.</li>
                   <li><span class="text-muted me-1">25 Nov</span> All audio is now 128 kbps or lower (about 109 MB smaller, so pages load faster). New audio is compressed automatically, and <code>check.py</code> flags anything over the limit.</li>
