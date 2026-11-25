@@ -21,14 +21,14 @@
   const noteName = midi => NOTE_NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
 
   // ---------- pitch detection (YIN) ----------
-  function detectPitch(buf, sr) {
+  function detectPitch(buf, sr, threshold = 0.15, fmin = 70, fmax = 1000) {
     const W = buf.length >> 1;
     let rms = 0;
     for (let i = 0; i < buf.length; i++) rms += buf[i] * buf[i];
     if (Math.sqrt(rms / buf.length) < 0.008) return null; // too quiet
 
-    const tauMin = Math.floor(sr / 1000);               // up to ~1000 Hz
-    const tauMax = Math.min(W - 1, Math.floor(sr / 70)); // down to ~70 Hz
+    const tauMin = Math.floor(sr / fmax);
+    const tauMax = Math.min(W - 1, Math.floor(sr / fmin));
     const d = new Float32Array(tauMax + 1);
     for (let tau = 1; tau <= tauMax; tau++) {
       let sum = 0;
@@ -46,7 +46,7 @@
     }
     let tau = -1;
     for (let t = tauMin; t <= tauMax; t++) {
-      if (d[t] < 0.15) {
+      if (d[t] < threshold) {
         while (t + 1 <= tauMax && d[t + 1] < d[t]) t++;
         tau = t;
         break;
@@ -90,11 +90,11 @@
         <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop section</button>
         <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear section</button>
         <span class="small text-muted section-info">Drag on the waveform to pick a section to repeat.</span>
-        ${isLine ? `<div class="note-area ms-auto d-flex align-items-center flex-wrap justify-content-end gap-2">
+        <div class="note-area ms-auto d-flex align-items-center flex-wrap justify-content-end gap-2">
           <span class="small text-muted">Note</span>
           <span class="note-history d-flex flex-wrap gap-1" aria-label="Recent notes"></span>
-          <button type="button" class="note-chip" disabled title="The last note heard. Tap to hear it on piano.">-</button>
-        </div>` : ''}
+          <button type="button" class="note-chip" disabled title="${isLine ? 'The last note heard.' : 'The most prominent note heard (a best guess on a full mix).'} Tap to hear it on piano.">-</button>
+        </div>
       </div>`;
 
     const $ = sel => host.querySelector(sel);
@@ -170,7 +170,7 @@
       if (current && current !== self) current.pause();
       current = self;
       $('.pp').innerHTML = ICON.pause; $('.pp').setAttribute('aria-label', 'Pause');
-      if (isLine) startPitch();
+      startPitch();
     });
     ws.on('pause', () => {
       $('.pp').innerHTML = ICON.play; $('.pp').setAttribute('aria-label', 'Play');
@@ -185,7 +185,9 @@
     loopBtn.addEventListener('click', () => setLoop(!loop));
     clearBtn.addEventListener('click', clearSection);
 
-    // ---------- note detection (line tapes only) ----------
+    // ---------- note detection ----------
+    // Reliable on single-voice line tapes; on backing tracks and full-choir recordings it shows the
+    // most prominent note, which is a best guess.
     const chip = $('.note-chip'), histEl = $('.note-history');
     let timer = null, analyser = null, buf = null, recent = [];
     let shown = null, shownUnsure = false, cand = null, candCount = 0, history = [];
@@ -271,7 +273,9 @@
       if (timer) return;
       timer = setInterval(() => {
         analyser.getFloatTimeDomainData(buf);
-        const f = detectPitch(buf, getCtx().sampleRate);
+        // a full mix has many notes at once, so only trust clear, strong readings there
+        const f = isLine ? detectPitch(buf, getCtx().sampleRate)
+                         : detectPitch(buf, getCtx().sampleRate, 0.13, 80, 800); // narrower range, stricter
         if (!f) return;
         const exact = 69 + 12 * Math.log2(f / 440);
         recent.push(exact); if (recent.length > 5) recent.shift();
@@ -279,7 +283,7 @@
         const midi = Math.round(mid), cents = Math.round((mid - midi) * 100);
         // only switch note once it has been steady for two readings, so the button doesn't flicker
         if (midi === cand) candCount++; else { cand = midi; candCount = 1; }
-        if (candCount >= 2) showNote(midi, cents);
+        if (candCount >= (isLine ? 2 : 3)) showNote(midi, cents); // mixes must hold a note a little longer
       }, 50);
     }
     function stopPitch() {

@@ -151,7 +151,7 @@
     master.gain.value = volume * LEVEL[inst];
     master.connect(ctx.destination);
     const voice = BUILD[inst](ctx, master, midi, ctx.currentTime);
-    voices.set(id, { voice, master, midi });
+    voices.set(id, { voice, master, midi, inst });
     light(midi, true);
   }
   function noteOff(id) {
@@ -311,5 +311,5 @@
   const hold = (id, midi) => noteOn('ref-' + id, midi, 'piano');
   const releaseRef = id => noteOff('ref-' + id);
 
-  window.choirKeyboard = { hold, release: releaseRef, activeCount: () => voices.size, get start() { return start; }, get instrument() { return instrument; }, renderTest };
+  window.choirKeyboard = { hold, release: releaseRef, activeCount: () => voices.size, activeInstruments: () => [...voices.values()].map(v => v.inst), get start() { return start; }, get instrument() { return instrument; }, renderTest };
 })();
