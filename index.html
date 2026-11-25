@@ -38,6 +38,7 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
                 <ul class="mb-0">
+                  <li><span class="text-muted me-1">25 Nov</span> Both lists are alphabetical. For a fixed set order, set <code>"performanceOrder": "custom"</code> in <code>songs.json</code>.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Added the Song Status table.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Christmas label is now a santa-hat image (the emoji didn't show in every browser).</li>
                   <li><span class="text-muted me-1">24 Nov</span> Each song lives in its own folder (<code>songs/&lt;song&gt;/</code>) with its audio, <code>song.json</code> and <code>lyrics.txt</code>. Old links still redirect.</li>
@@ -90,7 +91,7 @@
   </div>
 
   <script>
-    // Everything on this page is built from songs.json (performance list keeps its order)
+    // Everything on this page is built from songs.json 
     const esc = s => String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const byTitle = (a, b) => a.title.localeCompare(b.title); // alphabetical
@@ -145,8 +146,10 @@
     fetch('songs.json').then(r => r.json()).then(data => {
       const bySlug = Object.fromEntries(data.songs.map(s => [s.slug, s]));
       document.getElementById('songList').innerHTML = [...data.songs].sort(byTitle).map(link).join('');
-      document.getElementById('performanceList').innerHTML =
-        data.performance.map(sl => bySlug[sl]).filter(Boolean).map(link).join('');
+      // "performanceOrder": "alphabetical" (default) or "custom" (keeps the order in songs.json)
+      const perf = data.performance.map(sl => bySlug[sl]).filter(Boolean);
+      if (data.performanceOrder !== 'custom') perf.sort(byTitle);
+      document.getElementById('performanceList').innerHTML = perf.map(link).join('');
       applyFilters();
       loadStatus(data.songs);
     }).catch(e => {
