@@ -88,8 +88,7 @@
     // Everything on this page is built from songs.json (performance list keeps its order)
     const esc = s => String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const rank = s => s.genre === 'X' ? 0 : 1; // Christmas first, then alphabetical
-    const byTitle = (a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title);
+    const byTitle = (a, b) => a.title.localeCompare(b.title); // alphabetical
     const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}">${esc(s.genre)}</span>${esc(s.title)}</a>`;
 
     let selectedGenre = 'all';
