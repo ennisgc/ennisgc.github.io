@@ -20,6 +20,10 @@
       "heading": "Line Tapes",
       "tracks": [
         {
+          "label": "Soprano",
+          "file": "line-tape-soprano.m4a"
+        },
+        {
           "label": "Alto",
           "file": "line-tape-alto.m4a"
         },

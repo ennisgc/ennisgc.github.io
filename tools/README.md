@@ -28,9 +28,18 @@ Re-encodes anything over 128 kbps (never touches files already under it) and tur
 fails if any audio is over the limit (e.g. after you drop a file straight into a song folder).
 Originals stay recoverable from git history.
 
+## Waveform data
+
+    python3 tools/make-peaks.py           # build/refresh songs/<song>/peaks.json
+    python3 tools/make-peaks.py --check   # report only
+
+The in-page player draws each waveform from `peaks.json` so the audio itself only downloads when you press
+play. `add-song.py` and `compress-audio.py` keep it up to date; `check.py` warns if it is stale.
+
 ## Check for mistakes
 
     python3 tools/check.py            # errors fail, warnings don't
     python3 tools/check.py --strict   # warnings fail too
+    python3 tools/check.py --deep     # also test-decode every audio file (1-2 min) for damaged streams
 
 Run it before every push. It also fails if any audio is over 128 kbps. Preview locally with `python3 -m http.server`.

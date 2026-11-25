@@ -5,7 +5,8 @@
     python3 tools/compress-audio.py             # do it
     python3 tools/compress-audio.py --check     # report only; exit 1 if anything is over the limit
 
-  * .mp3 / .m4a over the limit are re-encoded in the same format
+  * .mp3 / .m4a over the limit, or with a damaged audio stream (some recorder AAC that Firefox
+    refuses to play), are re-encoded in the same format
   * .wav / .flac / audio-only .mp4 etc. become .m4a (and song.json is updated to match)
 The original files stay recoverable from git history. Re-run any time; it's idempotent.
 """
@@ -36,18 +37,19 @@ def main():
                 continue
             br = audio.bitrate(f)
             big = br > audio.LIMIT * audio.TOLERANCE
-            if ext in audio.OK_EXT and not big:
+            bad = ext in audio.OK_EXT and not audio.decodes_clean(f)  # damaged stream: Firefox won't play it
+            if ext in audio.OK_EXT and not big and not bad:
                 skipped += 1
                 continue
             target = f if ext in audio.OK_EXT else f.with_suffix(".m4a")
-            how = "compress" if ext in audio.OK_EXT else "convert"
+            how = ("re-encode (damaged stream)" if bad and not big else "compress") if ext in audio.OK_EXT else "convert"
             size = f.stat().st_size
             changes.append((f, br, how))
             if check or dry:
                 print(f"  {f.relative_to(ROOT)}  {br // 1000} kbps  -> {how}")
                 continue
             try:
-                if ext not in audio.OK_EXT and audio.codec(f) == "aac" and not big:
+                if ext not in audio.OK_EXT and audio.codec(f) == "aac" and not big and audio.decodes_clean(f):
                     audio.remux(f, target)
                 else:
                     audio.encode(f, target)
@@ -61,6 +63,8 @@ def main():
             before_total += size
             after_total += new
             print(f"  {f.relative_to(ROOT)}  {br // 1000} kbps, {size / MB:.1f} -> {new / MB:.1f} MB")
+        if not dry and not check:
+            audio.update_peaks(folder)  # keeps waveforms in step with any re-encoded file
         if renames and not dry:
             sj = folder / "song.json"
             data = json.loads(sj.read_text())

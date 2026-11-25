@@ -3,6 +3,7 @@
 
     python3 tools/check.py            # errors fail (exit 1), warnings don't
     python3 tools/check.py --strict   # warnings fail too
+    python3 tools/check.py --deep     # also decode every audio file (slow, ~1-2 min) to find damaged streams
 
 Errors (things that break a page):
   - songs.json missing/invalid, a song without a folder (or a folder not in songs.json)
@@ -16,6 +17,7 @@ Errors (things that break a page):
 Warnings (worth a look):
   - lyrics missing or just a placeholder, no video, no audio at all
   - audio in a format that may not play everywhere (.wav, .mp4, .flac, ...)
+  - waveform data (peaks.json) missing or out of date (python3 tools/make-peaks.py)
   - audio files in a folder that no song.json uses, or unsafe file names (spaces etc.)
 """
 import json
@@ -32,6 +34,7 @@ OK_EXT = {".mp3", ".m4a"}
 AUDIO_EXT = {".mp3", ".m4a", ".wav", ".mp4", ".aac", ".flac", ".ogg", ".aiff", ".aif", ".wma", ".opus"}
 errors, warnings = [], []
 HAVE_FFMPEG = audio.have_ffmpeg()
+DEEP = False
 
 
 def err(where, msg):
@@ -54,6 +57,8 @@ def load(path, where):
 
 def main():
     strict = "--strict" in sys.argv
+    global DEEP
+    DEEP = "--deep" in sys.argv
     manifest = load(ROOT / "songs.json", "songs.json")
     if manifest is None:
         return finish(strict)
@@ -132,6 +137,9 @@ def check_song(folder, slug, template):
                 err(where, f"audio file '{name}' is listed but doesn't exist")
             elif Path(name).suffix.lower() not in OK_EXT:
                 warn(where, f"'{name}' may not play in every browser (use .mp3 or .m4a)")
+            elif DEEP and HAVE_FFMPEG and not audio.decodes_clean(folder / name):
+                err(where, f"'{name}' has a damaged audio stream (Firefox won't play it); "
+                           f"run python3 tools/compress-audio.py")
             elif HAVE_FFMPEG and audio.too_big(folder / name):
                 err(where, f"'{name}' is {audio.bitrate(folder / name) // 1000} kbps "
                            f"(limit 128); run python3 tools/compress-audio.py")
@@ -150,6 +158,18 @@ def check_song(folder, slug, template):
         err(where, f"lyrics file '{ly.name}' doesn't exist")
     elif len(ly.read_text().strip()) < 40:
         warn(where, "lyrics missing or just a placeholder")
+
+    if HAVE_FFMPEG and tracks:
+        pf = folder / "peaks.json"
+        try:
+            peaks = json.loads(pf.read_text()) if pf.exists() else {}
+        except json.JSONDecodeError:
+            peaks = {}
+            err(where, "peaks.json is not valid JSON; run python3 tools/make-peaks.py --all")
+        for name in sorted(referenced):
+            f = folder / name
+            if f.is_file() and (name not in peaks or peaks[name].get("size") != f.stat().st_size):
+                warn(where, f"waveform data for '{name}' missing or out of date; run python3 tools/make-peaks.py")
 
     for f in sorted(folder.iterdir()):
         if f.suffix.lower() in AUDIO_EXT:

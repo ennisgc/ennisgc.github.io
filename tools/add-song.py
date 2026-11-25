@@ -133,6 +133,8 @@ def main():
         manifest.setdefault("performance", []).append(slug)
 
     if not args.dry_run:
+        if args.audio and audio.have_ffmpeg():
+            audio.update_peaks(folder)
         (folder / "song.json").write_text(json.dumps(song, indent=2, ensure_ascii=False) + "\n")
         (folder / "lyrics.txt").write_text(lyrics if lyrics.endswith("\n") else lyrics + "\n")
         MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
