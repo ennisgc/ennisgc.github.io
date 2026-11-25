@@ -106,3 +106,7 @@ audio {
   background: white;
   padding-bottom: 0.5rem;
 }
+
+/* Song status table */
+.status-table .status-yes { background-color: #d4edda; }
+.status-table .status-no { background-color: #f8d7da; }

@@ -21,15 +21,44 @@
         <h2 class="accordion-header">
           <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#updatesBody" aria-expanded="false" aria-controls="updatesBody">Latest Updates</button>
         </h2>
-        <div id="updatesBody" class="accordion-collapse collapse" data-bs-parent="#updatesAccordion">
+        <div id="updatesBody" class="accordion-collapse collapse">
           <div class="accordion-body py-2 small">
-            <ul class="mb-0">
-              <li>Each song now lives in its own folder (<code>songs/&lt;song&gt;/</code>) with all of its tracks. Old links still redirect.</li>
-              <li>Lyrics now show in a side panel on desktop (still a full-screen pop-up on phones).</li>
-              <li>Added Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain.</li>
-              <li>The Current Performance List is now the Christmas set, in performance order.</li>
-              <li>Fixed the Winter Wonderland soprano line tape, layout errors, and the genre filter.</li>
-            </ul>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <h3 class="h6 fw-bold">Content</h3>
+                <ul class="mb-0">
+                  <li>Added Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain, with backing tracks, lyrics and videos.</li>
+                  <li>The Current Performance List is now the Christmas set, in performance order.</li>
+                  <li>Fixed the Winter Wonderland soprano line tape.</li>
+                </ul>
+              </div>
+              <div class="col-12 col-md-6">
+                <h3 class="h6 fw-bold">Technical</h3>
+                <ul class="mb-0">
+                  <li>Each song lives in its own folder (<code>songs/&lt;song&gt;/</code>) with its audio, <code>song.json</code> and <code>lyrics.txt</code>. Old links still redirect.</li>
+                  <li>Song pages and these lists are built in the browser from <code>songs.json</code>.</li>
+                  <li>Lyrics show in a side panel on desktop (full-screen pop-up on phones).</li>
+                  <li>Fixed broken HTML, the genre filter, and a file-name case bug.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#statusBody" aria-expanded="false" aria-controls="statusBody">Song Status</button>
+        </h2>
+        <div id="statusBody" class="accordion-collapse collapse">
+          <div class="accordion-body py-2 small">
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered text-center align-middle mb-0 status-table">
+                <thead>
+                  <tr><th class="text-start">Song</th><th>Backing</th><th>Recording</th><th>Soprano LT</th><th>Alto LT</th><th>Men LT</th><th>Video</th><th>Lyrics</th></tr>
+                </thead>
+                <tbody id="statusRows"><tr><td colspan="8">Loading…</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -80,12 +109,42 @@
     genreButtons.forEach(b => b.addEventListener('click', () => { selectedGenre = b.dataset.genre; applyFilters(); }));
     songFilterInput.addEventListener('input', applyFilters);
 
+
+    // Song status table: reads each song's song.json and lyrics.txt
+    async function loadStatus(songs) {
+      const rows = await Promise.all([...songs].sort(byTitle).map(async s => {
+        try {
+          const base = `songs/${s.slug}/`;
+          const [song, lyrics] = await Promise.all([
+            fetch(base + 'song.json').then(r => r.json()),
+            fetch(base + 'lyrics.txt').then(r => r.ok ? r.text() : '').catch(() => '')
+          ]);
+          const tracks = (song.sections || []).flatMap(sec =>
+            sec.tracks.map(t => ({ heading: sec.heading, label: t.label || '' })));
+          const lt = name => tracks.some(t => /^line tapes/i.test(t.heading) && t.label.toLowerCase() === name);
+          const flags = [
+            tracks.some(t => /backing track|all tracks mixed/i.test(t.label)),
+            tracks.some(t => /recording/i.test(t.label)),
+            lt('soprano'), lt('alto'), lt('men'),
+            (song.videos || []).length > 0,
+            lyrics.trim().length > 40
+          ];
+          return `<tr><td class="text-start"><a href="${base}">${esc(s.title)}</a></td>${
+            flags.map(f => `<td class="${f ? 'status-yes' : 'status-no'}">${f ? 'Yes' : 'No'}</td>`).join('')}</tr>`;
+        } catch (e) {
+          return `<tr><td class="text-start">${esc(s.title)}</td><td colspan="7" class="status-no">Could not load</td></tr>`;
+        }
+      }));
+      document.getElementById('statusRows').innerHTML = rows.join('');
+    }
+
     fetch('songs.json').then(r => r.json()).then(data => {
       const bySlug = Object.fromEntries(data.songs.map(s => [s.slug, s]));
       document.getElementById('songList').innerHTML = [...data.songs].sort(byTitle).map(link).join('');
       document.getElementById('performanceList').innerHTML =
         data.performance.map(sl => bySlug[sl]).filter(Boolean).map(link).join('');
       applyFilters();
+      loadStatus(data.songs);
     }).catch(e => {
       console.error(e);
       document.getElementById('songList').innerHTML = '<div class="alert alert-danger">Could not load songs.json. If you opened this file directly, run <code>python3 -m http.server</code>.</div>';
