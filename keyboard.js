@@ -294,7 +294,8 @@
     if (start + i < start + KEYS) noteOn('k' + e.key.toLowerCase(), start + i);
   });
   window.addEventListener('keyup', e => noteOff('k' + e.key.toLowerCase()));
-  panel.addEventListener('hidden.bs.offcanvas', allOff);
+  panel.addEventListener('show.bs.offcanvas', () => document.body.classList.add('keyboard-open'));
+  panel.addEventListener('hidden.bs.offcanvas', () => { document.body.classList.remove('keyboard-open'); allOff(); });
   window.addEventListener('blur', allOff);
 
   // ---------- show the note a line tape is singing ----------

@@ -149,7 +149,33 @@ audio {
 
 /* Keyboard offcanvas */
 .keyboard-panel {
-  --bs-offcanvas-width: min(100vw, 760px);
+  --bs-offcanvas-width: min(100vw, 520px);
+}
+
+/* On desktop, slide the page aside while the keyboard is open so nothing is covered. The lyrics
+   panel drops under the players to fit the narrower space. (Phones keep the full-screen panel.) */
+@media (min-width: 992px) {
+  body {
+    transition: padding-left 0.3s ease;
+  }
+
+  body.keyboard-open {
+    padding-left: 520px;
+  }
+
+  body.keyboard-open .song-layout > .song-main,
+  body.keyboard-open .song-layout > .lyrics-col {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  body.keyboard-open .lyrics-col {
+    position: static;
+  }
+
+  body.keyboard-open .lyrics-panel .offcanvas-body {
+    max-height: 60vh;
+  }
 }
 
 .piano {
