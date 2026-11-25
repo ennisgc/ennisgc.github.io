@@ -61,6 +61,7 @@
           <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="offcanvas" data-bs-target="#keyboardOffcanvas" aria-controls="keyboardOffcanvas">
             <svg viewBox="0 0 24 16" width="22" height="14" class="me-1" aria-hidden="true"><rect x="0.75" y="0.75" width="22.5" height="14.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 1v14M12 1v14M18 1v14" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 1h3v8h-3zM10.5 1h3v8h-3zM16.5 1h3v8h-3z" fill="currentColor"/></svg>Keyboard
           </button>
+          <a id="reportBtn" class="btn btn-outline-secondary mb-3 d-none" target="_blank" rel="noopener">Report an issue</a>
         </div>
         <div class="col-6 col-md-6 text-center"><h1 class="mb-3">${esc(song.title)}</h1></div>
         <div class="col-6 col-md-3 text-center text-md-end">
@@ -89,6 +90,16 @@
         </div>
       </div>`;
     initLyricsControls();
+    fetch('../../songs.json').then(r => r.json()).then(cfg => { // optional "Report an issue" form (see README)
+      const f = cfg.reportForm;
+      const btn = document.getElementById('reportBtn');
+      if (!f || !f.url || !btn) return;
+      const q = new URLSearchParams({ usp: 'pp_url' });
+      if (f.songEntry) q.set(f.songEntry, f.pageEntry ? song.title : `${song.title} - ${location.href}`); // one combined field if there's no separate page field
+      if (f.pageEntry) q.set(f.pageEntry, location.href);
+      btn.href = f.url + (f.url.includes('?') ? '&' : '?') + q;
+      btn.classList.remove('d-none');
+    }).catch(() => {});
     loadExtras(song);
   } catch (e) {
     console.error(e);

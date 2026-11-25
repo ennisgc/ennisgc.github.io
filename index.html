@@ -15,6 +15,7 @@
     <img style="width: 100%" src="banner-light.svg">
 </header>
 <main class="pb-5">
+  <div class="container text-end pt-2"><a id="reportLink" class="small d-none" target="_blank" rel="noopener">Report an issue or leave a note</a></div>
   <div class="container">
     <div class="accordion mt-3" id="updatesAccordion">
       <div class="accordion-item">
@@ -177,6 +178,8 @@
     }
 
     fetch('songs.json').then(r => r.json()).then(data => {
+      const rf = data.reportForm; // optional "Report an issue" form (see README)
+      if (rf && rf.url) { const l = document.getElementById('reportLink'); l.href = rf.url; l.classList.remove('d-none'); }
       const bySlug = Object.fromEntries(data.songs.map(s => [s.slug, s]));
       document.getElementById('songList').innerHTML = [...data.songs].sort(byTitle).map(link).join('');
       // "performanceOrder": "alphabetical" (default) or "custom" (keeps the order in songs.json)

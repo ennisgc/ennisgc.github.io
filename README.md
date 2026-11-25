@@ -156,3 +156,7 @@ There is no test suite. Use this routine:
 - Web MIDI input from a real keyboard.
 - One-time key detection per song for display (currently the nearest semitone is shown, deliberately not snapped to a key).
 - Missing content is listed live by `python3 tools/check.py` (videos, lyrics, audio).
+
+
+## Report an issue (Google Form)
+`songs.json` has a `reportForm` block: `{"url": "<form viewform URL>", "songEntry": "entry.NNN", "pageEntry": "entry.NNN"}`. While `url` is empty the buttons stay hidden. When set, every song page shows a "Report an issue" button that opens the form in a new tab with the song title (and page URL, if `pageEntry` is set) pre-filled, and the home page shows a small link. To get the `entry.NNN` ids: in the Form choose the three-dot menu, "Get pre-filled link", fill the song field with any text, copy the link, and read the `entry.NNN=` names from it. Notifications and the passphrase question are set up in Google Forms, not here.
