@@ -2,8 +2,8 @@
 
 <strong>A     </strong>| O Holy night, the stars are brightly shining.
 <strong>A     </strong>| It is the night of our dear Saviour’s birth. 
-<strong>A     </strong>| Long lay the world in sing and error pining 
-<strong>A     </strong>| ‘till He appeared and the soul felt its worth.
+<strong>A     </strong>| Long lay the world in sin and error pining 
+<strong>A     </strong>| ’til He appeared and the soul felt its worth.
 <strong>S A M </strong>| A thrill of hope the weary world rejoices. 
 <strong>S A M </strong>| For yonder breaks a new and glorious morning.
 
@@ -26,7 +26,7 @@
 
 <strong>S A M </strong>| Truly He taught us to love one another.
 <strong>S A M </strong>| His law is love and His gospel is peace
-<strong>S A M </strong>| Chains shall he break,
+<strong>S A M </strong>| Chains shall He break,
 <strong>S A M </strong>| For the slave is our brother.
 <strong>S A M </strong>| And in His Name all oppression shall cease.
 <strong>S A M </strong>| Sweet hymns of joy in grateful chorus raise we.

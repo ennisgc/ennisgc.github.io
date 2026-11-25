@@ -75,10 +75,15 @@ audio {
     align-self: flex-start;
   }
 
+  .lyrics-toolbar { padding: 0 0 0.5rem; border-bottom: 0; }
+
+  /* let the row reach the very bottom of the page so the sticky lyrics panel (and its A+ / A- bar) is never pushed up at the end */
+  .song-layout { margin-bottom: -3rem; }
+
   .lyrics-panel .offcanvas-body {
     display: block;
     padding: 1rem;
-    max-height: calc(100vh - 2rem);
+    max-height: calc(100vh - 5rem); /* leaves room for the A+ / A- bar above */
     overflow-y: auto;
     border: 1px solid var(--lightestblue);
     border-radius: 0.5rem;
@@ -92,11 +97,10 @@ audio {
 }
 
 .lyrics-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  flex: 0 0 auto;
   background: white;
-  padding-bottom: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--lightestblue);
 }
 
 /* Song status table */
@@ -176,7 +180,7 @@ audio {
   }
 
   body.keyboard-open .lyrics-panel .offcanvas-body {
-    max-height: 60vh;
+    max-height: calc(60vh - 3rem);
   }
 }
 

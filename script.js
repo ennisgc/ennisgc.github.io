@@ -21,7 +21,7 @@ function initLyricsControls() {
   const decreaseBtn = makeButton('A-', 'Decrease text size', 'me-2');
   const resetBtn = makeButton('Reset', 'Reset text size', '');
   bar.append(increaseBtn, decreaseBtn, resetBtn);
-  body.insertBefore(bar, body.firstChild);
+  body.parentElement.insertBefore(bar, body); // outside the scrolling area, so it never moves
 
   let size = parseFloat(localStorage.getItem('lyricsTextSize')) || DEFAULT;
 

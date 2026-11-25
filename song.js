@@ -3,6 +3,9 @@
   const app = document.getElementById('app');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Lyrics are plain text, but <strong> and <em> are allowed (part labels, echoes). Everything else is escaped.
+  const lyricsHtml = text => esc(text.replace(/^(\s*\n)+/, '').trimEnd())
+    .replace(/&lt;(\/?)(strong|em)&gt;/g, '<$1$2>');
   const mime = f => /\.m4a$/i.test(f) ? 'audio/mp4' : /\.wav$/i.test(f) ? 'audio/wav' : 'audio/mpeg';
 
   const loadScript = src => new Promise((resolve, reject) => {
@@ -77,7 +80,7 @@
             </div>
             <div class="offcanvas-body">
               <p><strong>S</strong>oprano  <strong>A</strong>lto  <strong>M</strong>en</p>
-              <pre class="bg-light p-3 rounded">${esc(lyrics)}</pre>
+              <pre class="bg-light p-3 rounded">${lyricsHtml(lyrics)}</pre>
             </div>
             <div class="offcanvas-footer d-lg-none p-3 text-center">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas" data-bs-target="#lyricsOffcanvas">Close</button>
