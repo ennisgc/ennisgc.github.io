@@ -299,11 +299,11 @@
 
   // ---------- show the note a line tape is singing ----------
   document.addEventListener('note-detected', e => {
-    const { midi, cents } = e.detail;
+    const { midi } = e.detail;
     piano.querySelectorAll('.key.detected').forEach(k => k.classList.remove('detected'));
     const k = keyEl(midi);
     if (k) k.classList.add('detected');
-    detectedLabel.textContent = `Last note heard: ${name(midi)} (${cents >= 0 ? '+' : ''}${cents} cents)` +
+    detectedLabel.textContent = `Last note heard: ${name(midi)}` +
       (k ? '' : ' - outside this keyboard, try Octave - / +');
   });
 

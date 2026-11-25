@@ -5,6 +5,7 @@
   const SPEEDS = [0.5, 0.6, 0.75, 0.9, 1, 1.1, 1.25];
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const MIN_SECTION = 0.3; // seconds; shorter drags are ignored
+  const UNSURE_CENTS = 30; // more than this far from the nearest note (max possible is 50): show a '?'
 
   const ICON = {
     play: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>',
@@ -93,7 +94,6 @@
           <span class="small text-muted">Note</span>
           <span class="note-history d-flex flex-wrap gap-1" aria-label="Recent notes"></span>
           <button type="button" class="note-chip" disabled title="The last note heard. Tap to hear it on piano.">-</button>
-          <span class="note-tuning small text-muted"></span>
         </div>` : ''}
       </div>`;
 
@@ -186,11 +186,10 @@
     clearBtn.addEventListener('click', clearSection);
 
     // ---------- note detection (line tapes only) ----------
-    const chip = $('.note-chip'), tuningEl = $('.note-tuning'), histEl = $('.note-history');
+    const chip = $('.note-chip'), histEl = $('.note-history');
     let timer = null, analyser = null, buf = null, recent = [];
-    let shown = null, cand = null, candCount = 0, history = [];
+    let shown = null, shownUnsure = false, cand = null, candCount = 0, history = [];
 
-    const tuningText = c => (Math.abs(c) < 15 ? '' : `${Math.abs(c)} cents ${c > 0 ? 'sharp' : 'flat'}`);
     function renderHistory() { // earlier notes, oldest first; the big button is the current one
       if (!histEl) return;
       histEl.innerHTML = history.slice(0, -1).map(m =>
@@ -198,20 +197,23 @@
     }
     function resetHistory() { history = []; renderHistory(); }
     function showNote(midi, cents) {
-      if (midi !== shown) {
-        shown = midi;
-        chip.textContent = noteName(midi);
+      const unsure = Math.abs(cents) > UNSURE_CENTS; // pitch sits between two notes: the name is a guess
+      if (midi !== shown || unsure !== shownUnsure) {
+        const newNote = midi !== shown;
+        shown = midi; shownUnsure = unsure;
+        chip.textContent = noteName(midi) + (unsure ? '?' : '');
         chip.dataset.midi = midi;
         chip.disabled = false;
-        chip.setAttribute('aria-label', `Last note heard: ${noteName(midi)}. Tap to hear it.`);
-        if (history[history.length - 1] !== midi) {
-          history.push(midi);
-          if (history.length > 9) history.shift();
-          renderHistory();
+        chip.setAttribute('aria-label', `Last note heard: ${noteName(midi)}${unsure ? ', not certain' : ''}. Tap to hear it.`);
+        if (newNote) {
+          if (history[history.length - 1] !== midi) {
+            history.push(midi);
+            if (history.length > 9) history.shift();
+            renderHistory();
+          }
+          document.dispatchEvent(new CustomEvent('note-detected', { detail: { midi, unsure } }));
         }
-        document.dispatchEvent(new CustomEvent('note-detected', { detail: { midi, cents } }));
       }
-      tuningEl.textContent = tuningText(cents);
     }
 
     // Tap or hold a note button to hear it on the piano (sounds while held, like a key).
