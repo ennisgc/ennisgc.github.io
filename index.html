@@ -27,18 +27,22 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Content</h3>
                 <ul class="mb-0">
-                  <li>Added Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain, with backing tracks, lyrics and videos.</li>
-                  <li>The Current Performance List is now the Christmas set, in performance order.</li>
-                  <li>Fixed the Winter Wonderland soprano line tape.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Added videos and lyrics for Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> All Songs list is now alphabetical.</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Added Winter Song, Do They Know It's Christmas? and Go Tell It on the Mountain, with backing tracks.</li>
+                  <li><span class="text-muted me-1">24 Nov</span> The Current Performance List is now the Christmas set, in performance order.</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Fixed the Winter Wonderland soprano line tape.</li>
                 </ul>
               </div>
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
                 <ul class="mb-0">
-                  <li>Each song lives in its own folder (<code>songs/&lt;song&gt;/</code>) with its audio, <code>song.json</code> and <code>lyrics.txt</code>. Old links still redirect.</li>
-                  <li>Song pages and these lists are built in the browser from <code>songs.json</code>.</li>
-                  <li>Lyrics show in a side panel on desktop (full-screen pop-up on phones).</li>
-                  <li>Fixed broken HTML, the genre filter, and a file-name case bug.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Added the Song Status table.</li>
+                  <li><span class="text-muted me-1">25 Nov</span> Christmas label is now a santa-hat image (the emoji didn't show in every browser).</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Each song lives in its own folder (<code>songs/&lt;song&gt;/</code>) with its audio, <code>song.json</code> and <code>lyrics.txt</code>. Old links still redirect.</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Song pages and these lists are built in the browser from <code>songs.json</code>.</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Lyrics show in a side panel on desktop (full-screen pop-up on phones).</li>
+                  <li><span class="text-muted me-1">24 Nov</span> Fixed broken HTML, the genre filter, and a file-name case bug.</li>
                 </ul>
               </div>
             </div>
@@ -63,7 +67,7 @@
         </div>
       </div>
     </div>
-    <div class="row g-5">
+    <div class="row g-5 pt-4">
       <div class="col-12 col-md-8">
         <h2>Current Performance List</h2>
         <div class="list-group" id="performanceList"></div>
@@ -89,7 +93,7 @@
     const esc = s => String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const byTitle = (a, b) => a.title.localeCompare(b.title); // alphabetical
-    const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}" data-code="${esc(s.genre)}">${s.genre === 'X' ? '🎅' : esc(s.genre)}</span>${esc(s.title)}</a>`;
+    const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}" data-code="${esc(s.genre)}"${s.genre === 'X' ? ' title="Christmas"' : ''}>${esc(s.genre)}</span>${esc(s.title)}</a>`;
 
     let selectedGenre = 'all';
     const songFilterInput = document.getElementById('songFilter');

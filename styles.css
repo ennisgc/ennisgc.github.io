@@ -55,8 +55,10 @@ audio {
 .genre-label.G { background-color: var(--purple); }
 .genre-label.Co { background-color: var(--blue); }
 
+/* Christmas: light green chip with a santa-hat image (no emoji font needed); the X text is hidden */
 .genre-label.X {
-  color: black; /* the 🎅 is plain text in the HTML */
+  color: transparent;
+  background: #8fd19e url("santa-hat.svg") center / auto 85% no-repeat;
 }
 
 /* Lyrics: full-width offcanvas on mobile, sticky side panel on desktop */
