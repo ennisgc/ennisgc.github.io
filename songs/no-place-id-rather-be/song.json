@@ -25,15 +25,15 @@
       "tracks": [
         {
           "label": "Soprano",
-          "file": "line-tape-soprano.wav"
+          "file": "line-tape-soprano.m4a"
         },
         {
           "label": "Alto",
-          "file": "line-tape-alto.wav"
+          "file": "line-tape-alto.m4a"
         },
         {
           "label": "Men",
-          "file": "line-tape-men.wav"
+          "file": "line-tape-men.m4a"
         }
       ]
     }
