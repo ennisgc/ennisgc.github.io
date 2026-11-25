@@ -277,3 +277,4 @@ audio {
   opacity: 0; transition: opacity 0.15s; pointer-events: none;
 }
 .lane-readout.on { opacity: 1; }
+.key-main { font-weight: 600; }

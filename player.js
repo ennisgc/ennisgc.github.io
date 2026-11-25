@@ -74,9 +74,19 @@
     const isLine = card.dataset.kind === 'line';
 
     const keys = (peaksEntry && peaksEntry.keys) || [];
-    const keyLine = keys.length ? `<div class="key-line small mt-2"><span class="text-muted">Possible key</span>${
-      keys.map(k => `<button type="button" class="key-seg" data-start="${k.start}" title="Possible key: ${k.key} or ${k.rel} (they share the same notes). A best guess. Click to jump here.">${
-        keys.length > 1 ? `<span class="text-muted">${fmt(k.start)}</span> ` : ''}${k.key} <span class="text-muted">/ ${k.rel}</span></button>`).join('<span class="text-muted">&rarr;</span>')}</div>` : '';
+    // Overall key = the key that covers the most of the track; shown first, then where it changes.
+    let keyLine = '';
+    if (keys.length) {
+      const dur = (peaksEntry && peaksEntry.duration) || 0;
+      const span = {};
+      keys.forEach((k, i) => { span[k.key] = (span[k.key] || 0) + ((keys[i + 1] ? keys[i + 1].start : dur || k.start + 1) - k.start); });
+      const main = keys.reduce((a, k) => (span[k.key] > span[a.key] ? k : a), keys[0]);
+      const hint = k => `Possible key: ${k.key} or ${k.rel} (they share the same notes). A best guess.`;
+      const seg = k => `<button type="button" class="key-seg" data-start="${k.start}" title="${hint(k)} Click to jump here."><span class="text-muted">${fmt(k.start)}</span> ${k.key} <span class="text-muted">/ ${k.rel}</span></button>`;
+      keyLine = `<div class="key-line small mt-2"><span class="text-muted">Possible key${keys.length > 1 ? ' (overall)' : ''}</span>
+        <span class="key-main" title="${hint(main)}">${main.key} <span class="text-muted">/ ${main.rel}</span></span>${
+        keys.length > 1 ? `<span class="text-muted ms-2">Possible changes:</span>${keys.map(seg).join('<span class="text-muted">&rarr;</span>')}` : ''}</div>`;
+    }
     host.innerHTML = `
       <div class="wave" role="img" aria-label="Waveform of ${label.replace(/"/g, '')}"></div>
       ${isLine ? '<div class="note-lane" aria-label="Possible notes heard so far (best guesses). Tap one to hear it."><span class="lane-hint">Possible notes appear here as the tape plays (best guesses). Tap one to hear it.</span></div>' : ''}
