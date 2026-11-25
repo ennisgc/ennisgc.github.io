@@ -1,0 +1,24 @@
+{
+  "title": "One Call Away",
+  "videos": [],
+  "sections": [
+    {
+      "heading": "Line Tapes",
+      "tracks": [
+        {
+          "label": "Alto",
+          "file": "line-tape-alto.m4a"
+        },
+        {
+          "label": "Men",
+          "file": "line-tape-men.m4a"
+        },
+        {
+          "label": "Soprano",
+          "file": "line-tape-soprano.m4a"
+        }
+      ]
+    }
+  ],
+  "lyrics": "lyrics.txt"
+}
