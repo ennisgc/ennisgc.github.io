@@ -73,8 +73,14 @@
     const label = card.dataset.label;
     const isLine = card.dataset.kind === 'line';
 
+    const keys = (peaksEntry && peaksEntry.keys) || [];
+    const keyLine = keys.length ? `<div class="key-line small mt-2"><span class="text-muted">Possible key</span>${
+      keys.map(k => `<button type="button" class="key-seg" data-start="${k.start}" title="Possible key: ${k.key} or ${k.rel} (they share the same notes). A best guess. Click to jump here.">${
+        keys.length > 1 ? `<span class="text-muted">${fmt(k.start)}</span> ` : ''}${k.key} <span class="text-muted">/ ${k.rel}</span></button>`).join('<span class="text-muted">&rarr;</span>')}</div>` : '';
     host.innerHTML = `
       <div class="wave" role="img" aria-label="Waveform of ${label.replace(/"/g, '')}"></div>
+      ${isLine ? '<div class="note-lane" aria-label="Possible notes heard so far (best guesses). Tap one to hear it."><span class="lane-hint">Possible notes appear here as the tape plays (best guesses). Tap one to hear it.</span></div>' : ''}
+      ${keyLine}
       <div class="player-controls d-flex flex-wrap align-items-center gap-2 mt-2">
         <button type="button" class="btn btn-primary btn-sm pp" aria-label="Play">${ICON.play}</button>
         <button type="button" class="btn btn-outline-secondary btn-sm back" aria-label="Back 5 seconds">-5s</button>
@@ -91,11 +97,11 @@
         <button type="button" class="btn btn-outline-secondary btn-sm loop" aria-pressed="false" disabled>Loop section</button>
         <button type="button" class="btn btn-outline-secondary btn-sm clear" disabled>Clear section</button>
         <span class="small text-muted section-info">Drag on the waveform to pick a section to repeat.</span>
-        <div class="note-area ms-auto d-flex align-items-center flex-wrap justify-content-end gap-2">
-          <span class="small text-muted">Note</span>
-          <span class="note-history d-flex flex-wrap gap-1" aria-label="Recent notes"></span>
-          <button type="button" class="note-chip" disabled title="${isLine ? 'The last note heard.' : 'The most prominent note heard (a best guess on a full mix).'} Tap to hear it on piano.">-</button>
-        </div>
+        ${isLine ? `<div class="note-area ms-auto d-flex align-items-center flex-wrap justify-content-end gap-2">
+          <button type="button" class="btn btn-link btn-sm p-0 clear-notes" disabled>Clear notes</button>
+          <span class="small text-muted">Possible note</span>
+          <button type="button" class="note-chip" disabled title="The last note the app thinks it heard (a best guess). Tap to hear it on piano.">-</button>
+        </div>` : ''}
       </div>`;
 
     const $ = sel => host.querySelector(sel);
@@ -211,7 +217,7 @@
 
     ws.on('timeupdate', t => {
       showTime(t);
-      if (loop && region && t >= region.end - 0.03) { ws.setTime(region.start); if (self.resetNotes) self.resetNotes(); }
+      if (loop && region && t >= region.end - 0.03) { ws.setTime(region.start); }
     });
     ws.on('ready', () => showTime(ws.getCurrentTime()));
     ws.on('play', () => {
@@ -233,42 +239,141 @@
     loopBtn.addEventListener('click', () => setLoop(!loop));
     clearBtn.addEventListener('click', clearSection);
 
-    // ---------- note detection ----------
-    // Reliable on single-voice line tapes; on backing tracks and full-choir recordings it shows the
-    // most prominent note, which is a best guess.
-    const chip = $('.note-chip'), histEl = $('.note-history');
+    // ---------- note detection (line tapes only) ----------
+    // Reliable on a single voice. Backing tracks and full recordings have no single note to follow, so
+    // they get an estimated key line instead (from peaks.json), not live note detection.
+    const chip = $('.note-chip'), lane = $('.note-lane'), clearNotes = $('.clear-notes');
     let timer = null, analyser = null, buf = null, recent = [];
-    let shown = null, shownUnsure = false, cand = null, candCount = 0, history = [];
+    let shown = null, shownUnsure = false, cand = null, candCount = 0;
 
-    function renderHistory() { // earlier notes, oldest first; the big button is the current one
-      if (!histEl) return;
-      histEl.innerHTML = history.slice(0, -1).map(m =>
-        `<button type="button" class="note-mini" data-midi="${m}" title="Tap to hear ${noteName(m)}">${noteName(m)}</button>`).join('');
+    // Voice range for this tape: ignoring pitches outside it stops the piano's bass and
+    // overtones being mistaken for the voice. CENTER seeds the octave tracker below.
+    const lab = label.toLowerCase();
+    const both = /soprano/.test(lab) && /men|tenor|bass/.test(lab);
+    const part = both ? { f: [70, 1100], center: 62 }
+      : /soprano/.test(lab) ? { f: [200, 1100], center: 72 }
+      : /alto/.test(lab) ? { f: [150, 700], center: 62 }
+      : /men|tenor|bass/.test(lab) ? { f: [80, 450], center: 52 }
+      : { f: [70, 1000], center: 62 };
+    const [FMIN, FMAX] = part.f;
+    const pcOf = m => ((m % 12) + 12) % 12;
+    const pcName = pc => NOTE_NAMES[pc];                          // names only: the octave is too often wrong
+    const playable = h => Math.max(36, Math.min(96, h));            // keep within the keyboard's sound range
+    const pcDist = (a, b) => Math.min((a - b + 12) % 12, (b - a + 12) % 12);
+
+    // Notes are kept per position in the song (0.1 s slots), so playing the same bit again doesn't pile
+    // up extra notes. Only the note name is kept: the octave is the detector's weakest guess. A stored
+    // note is replaced only by one at least 3 semitones away that shows up 4 readings in a row.
+    // For bar height, each note takes whichever octave lands nearest the previous note, which keeps the
+    // melody's shape without trusting the detected octave.
+    const SLOT = 0.1, REPLACE_SEMITONES = 3, REPLACE_READINGS = 4;
+    const slots = [];            // slot index -> {pc, h}  (h = tracked height in semitones)
+    let pending = null;          // {slot, pc, n}
+    let lastH = part.center;
+    let drawQueued = false;
+    function trackHeight(i, pc) {
+      let ref = lastH;
+      for (let k = i - 1; k >= Math.max(0, i - 30); k--) if (slots[k]) { ref = slots[k].h; break; }
+      const h = pc + 12 * Math.round((ref - pc) / 12);
+      lastH = h;
+      return h;
     }
-    function resetHistory() { history = []; renderHistory(); }
-    function showNote(midi, cents) {
+    // Returns the suggested (tracked) octave for this reading, as a midi note, so a tap can play it.
+    function recordNote(t, midi) {
+      const pc = pcOf(midi);
+      const i = Math.floor(t / SLOT);
+      const have = slots[i];
+      if (have === undefined) {
+        const h = trackHeight(i, pc);
+        slots[i] = { pc, h }; pending = null; queueDraw();
+        return h;
+      }
+      const near = (ref) => pc + 12 * Math.round((ref - pc) / 12);
+      if (pcDist(pc, have.pc) < REPLACE_SEMITONES) { pending = null; return near(have.h); }
+      if (pending && pending.pc === pc && Math.abs(pending.slot - i) <= 2) pending.n++;
+      else pending = { slot: i, pc, n: 1 };
+      if (pending.n >= REPLACE_READINGS) {
+        const h = trackHeight(i, pc);
+        for (let k = i - 1; k <= i + 1; k++) if (slots[k] !== undefined) slots[k] = { pc, h };
+        slots[i] = { pc, h }; pending = null; queueDraw();
+        return h;
+      }
+      return near(have.h);
+    }
+    function queueDraw() { if (!drawQueued) { drawQueued = true; requestAnimationFrame(drawLane); } }
+    function drawLane() {
+      drawQueued = false;
+      if (!lane) return;
+      const dur = total() || 1;
+      const segs = [];           // consecutive slots with the same note become one bar
+      for (let i = 0; i < slots.length; i++) {
+        if (!slots[i]) continue;
+        const last = segs[segs.length - 1];
+        if (last && last.pc === slots[i].pc && i - last.endSlot <= 3) last.endSlot = i;
+        else segs.push({ pc: slots[i].pc, h: slots[i].h, startSlot: i, endSlot: i });
+      }
+      lane.querySelector('.lane-hint')?.remove();
+      lane.querySelectorAll('.note-seg').forEach(n => n.remove());
+      clearNotes.disabled = !segs.length;
+      if (!segs.length) { lane.insertAdjacentHTML('afterbegin', '<span class="lane-hint">Possible notes appear here as the tape plays (best guesses). Tap one to hear it.</span>'); return; }
+      const lo = Math.min(...segs.map(g => g.h)), hi = Math.max(...segs.map(g => g.h));
+      const rows = Math.max(hi - lo + 1, 5), H = lane.clientHeight || 56, rowH = (H - 4) / rows;
+      const px = lane.clientWidth || 1;
+      lane.insertAdjacentHTML('beforeend', segs.map(g => {
+        const left = g.startSlot * SLOT / dur * 100, w = (g.endSlot - g.startSlot + 1) * SLOT / dur * 100;
+        const top = 2 + (hi - g.h) * rowH;
+        const wide = w / 100 * px >= 24;
+        const name = pcName(g.pc);
+        return `<span class="note-seg${wide ? ' labelled' : ''}" role="button" tabindex="0" data-midi="${playable(g.h)}" data-name="${name}" title="Possible note ${name}: tap to hear"` +
+          ` aria-label="Possible note ${name}, tap to hear" style="left:${left}%;width:${w}%;top:${top}px;height:${Math.max(rowH - 1, 8)}px">${wide ? name : ''}</span>`;
+      }).join(''));
+    }
+    function clearAllNotes() {
+      slots.length = 0; pending = null; shown = null; lastH = part.center;
+      chip.textContent = '-'; chip.disabled = true; delete chip.dataset.midi;
+      drawLane();
+    }
+    if (clearNotes) clearNotes.addEventListener('click', clearAllNotes);
+
+    function showNote(midi, cents, h) {
+      const pc = pcOf(midi);
       const unsure = Math.abs(cents) > UNSURE_CENTS; // pitch sits between two notes: the name is a guess
-      if (midi !== shown || unsure !== shownUnsure) {
-        const newNote = midi !== shown;
-        shown = midi; shownUnsure = unsure;
-        chip.textContent = noteName(midi) + (unsure ? '?' : '');
-        chip.dataset.midi = midi;
+      if (pc !== shown || unsure !== shownUnsure) {
+        const newNote = pc !== shown;
+        shown = pc; shownUnsure = unsure;
+        chip.textContent = pcName(pc) + (unsure ? '?' : '');
+        chip.dataset.midi = playable(h);
         chip.disabled = false;
-        chip.setAttribute('aria-label', `Last note heard: ${noteName(midi)}${unsure ? ', not certain' : ''}. Tap to hear it.`);
-        if (newNote) {
-          if (history[history.length - 1] !== midi) {
-            history.push(midi);
-            if (history.length > 9) history.shift();
-            renderHistory();
-          }
-          document.dispatchEvent(new CustomEvent('note-detected', { detail: { midi, unsure } }));
-        }
+        chip.setAttribute('aria-label', `Possible note: ${pcName(pc)}${unsure ? ', less certain' : ''}. Tap to hear it.`);
+        if (newNote) document.dispatchEvent(new CustomEvent('note-detected', { detail: { midi: playable(h), unsure } }));
       }
     }
+
+    // Key line: click a key to jump to where it starts.
+    host.querySelectorAll('.key-seg').forEach(b => b.addEventListener('click', () => ws.setTime(parseFloat(b.dataset.start) || 0)));
 
     // Tap or hold a note button to hear it on the piano (sounds while held, like a key).
     const tapKey = 'player' + players.length;
     let tapping = false;
+    let readoutTimer = null;
+    function flash(el) { // say which note a tapped bar is, even if it's too narrow to carry a label
+      if (!lane || !el || !el.classList.contains('note-seg')) return;
+      let r = lane.querySelector('.lane-readout');
+      if (!r) { r = document.createElement('span'); r.className = 'lane-readout'; lane.appendChild(r); }
+      r.textContent = 'Possible note: ' + el.dataset.name;
+      r.classList.add('on');
+      lane.querySelectorAll('.note-seg.pressed').forEach(n => n.classList.remove('pressed'));
+      el.classList.add('pressed');
+      clearTimeout(readoutTimer);
+    }
+    function unflash() {
+      clearTimeout(readoutTimer);
+      readoutTimer = setTimeout(() => {
+        if (!lane) return;
+        lane.querySelector('.lane-readout')?.classList.remove('on');
+        lane.querySelectorAll('.note-seg.pressed').forEach(n => n.classList.remove('pressed'));
+      }, 1200);
+    }
     function tapStart(midi) {
       if (!window.choirKeyboard || !isFinite(midi)) return;
       tapStop();
@@ -281,21 +386,21 @@
       window.choirKeyboard.release(tapKey);
     }
     if (chip) {
-      const target = e => e.target.closest('.note-chip, .note-mini');
+      const target = e => e.target.closest('.note-chip, .note-seg');
       const midiOf = el => parseInt(el.dataset.midi, 10);
       host.addEventListener('pointerdown', e => {
         const el = target(e);
         if (!el || el.disabled) return;
         e.preventDefault();
-        tapStart(midiOf(el));
+        tapStart(midiOf(el)); flash(el);
       });
       host.addEventListener('keydown', e => {
         const el = target(e);
-        if (el && !el.disabled && !e.repeat && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); tapStart(midiOf(el)); }
+        if (el && !el.disabled && !e.repeat && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); tapStart(midiOf(el)); flash(el); }
       });
-      host.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') tapStop(); });
+      host.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') { tapStop(); unflash(); } });
       host.addEventListener('contextmenu', e => { if (target(e)) e.preventDefault(); });
-      window.addEventListener('pointerup', tapStop);
+      window.addEventListener('pointerup', () => { tapStop(); unflash(); });
       window.addEventListener('pointercancel', tapStop);
       window.addEventListener('blur', tapStop);
     }
@@ -314,7 +419,7 @@
       } catch (e) { console.warn('Note detection unavailable', e); return false; }
     }
     function startPitch() {
-      if (!chip || !ensureAnalyser()) return;
+      if (!isLine || !chip || !ensureAnalyser()) return;
       const ctx = getCtx();
       if (ctx.state === 'suspended') ctx.resume();
       chip.classList.remove('stale');
@@ -322,16 +427,15 @@
       timer = setInterval(() => {
         analyser.getFloatTimeDomainData(buf);
         // a full mix has many notes at once, so only trust clear, strong readings there
-        const f = isLine ? detectPitch(buf, getCtx().sampleRate)
-                         : detectPitch(buf, getCtx().sampleRate, 0.13, 80, 800); // narrower range, stricter
+        const f = detectPitch(buf, getCtx().sampleRate, 0.2, FMIN, FMAX);
         if (!f) return;
         const exact = 69 + 12 * Math.log2(f / 440);
         recent.push(exact); if (recent.length > 5) recent.shift();
         const mid = [...recent].sort((a, b) => a - b)[recent.length >> 1]; // median smooths glitches
         const midi = Math.round(mid), cents = Math.round((mid - midi) * 100);
-        // only switch note once it has been steady for two readings, so the button doesn't flicker
+        // only count a note once it has been steady for two readings, so it doesn't flicker
         if (midi === cand) candCount++; else { cand = midi; candCount = 1; }
-        if (candCount >= (isLine ? 2 : 3)) showNote(midi, cents); // mixes must hold a note a little longer
+        if (candCount >= 2) { const h = recordNote(audio.currentTime, midi); showNote(midi, cents, h); }
       }, 50);
     }
     function stopPitch() {
@@ -339,7 +443,6 @@
       recent = []; cand = null; candCount = 0;
       if (chip) chip.classList.add('stale'); // keep the last note on screen, dimmed
     }
-    self.resetNotes = resetHistory;
 
     players.push(self);
     return self;

@@ -168,7 +168,7 @@ def check_song(folder, slug, template):
             err(where, "peaks.json is not valid JSON; run python3 tools/make-peaks.py --all")
         for name in sorted(referenced):
             f = folder / name
-            if f.is_file() and (name not in peaks or peaks[name].get("size") != f.stat().st_size):
+            if f.is_file() and (name not in peaks or peaks[name].get("size") != f.stat().st_size or ("keys" not in peaks[name] and audio.have_numpy())):
                 warn(where, f"waveform data for '{name}' missing or out of date; run python3 tools/make-peaks.py")
 
     for f in sorted(folder.iterdir()):

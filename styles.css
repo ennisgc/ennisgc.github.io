@@ -234,3 +234,46 @@ audio {
 .status-table th.sortable:hover { background: #eef0ff; }
 .status-table th[aria-sort="ascending"]::after { content: " \25B2"; font-size: 0.7em; }
 .status-table th[aria-sort="descending"]::after { content: " \25BC"; font-size: 0.7em; }
+
+/* Note lane under a line tape's waveform: one bar per note, higher pitch = higher bar */
+.note-lane {
+  position: relative;
+  height: 64px;
+  margin-top: 0.25rem;
+  background: #fbfbff;
+  border: 1px solid var(--lightestblue);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+.note-lane .lane-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #6c757d; pointer-events: none; }
+.note-seg {
+  position: absolute;
+  min-width: 8px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  background: var(--lightblue, #9aa8e8);
+  color: var(--navy, #00006d);
+  font: 600 0.65rem/1 "Roboto Mono", monospace;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.note-seg::before { content: ""; position: absolute; inset: -6px -2px; } /* bigger invisible touch target */
+.note-seg:hover, .note-seg:focus-visible { background: #BE9F57; outline: none; }
+
+/* Estimated key under the waveform */
+.key-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem; }
+.key-seg { border: 1px solid var(--lightestblue); background: #fff; border-radius: 999px; padding: 0 0.6rem; font-size: 0.8rem; cursor: pointer; }
+.key-seg:hover { background: #eef0ff; }
+
+.note-seg.pressed { background: #BE9F57; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #BE9F57; z-index: 2; }
+.lane-readout {
+  position: absolute; top: 3px; right: 4px; z-index: 3; padding: 0.1rem 0.5rem;
+  background: var(--navy, #00006d); color: #fff; border-radius: 999px;
+  font: 600 0.8rem/1.3 "Roboto Mono", monospace;
+  opacity: 0; transition: opacity 0.15s; pointer-events: none;
+}
+.lane-readout.on { opacity: 1; }

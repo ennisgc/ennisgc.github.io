@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Build the waveform data (songs/<song>/peaks.json) that the in-page player draws.
+"""Build the waveform data (songs/<song>/peaks.json) that the in-page player draws, plus each track's
+estimated key(s) (needs numpy; without it the key line is simply left out).
 
     python3 tools/make-peaks.py            # add/refresh any missing or out-of-date entries
     python3 tools/make-peaks.py --all      # rebuild everything
@@ -26,7 +27,7 @@ def stale(folder):
     for f in sorted(folder.iterdir()):
         if f.suffix.lower() in audio.OK_EXT:
             e = data.get(f.name)
-            if not e or e.get("size") != f.stat().st_size:
+            if not e or e.get("size") != f.stat().st_size or ("keys" not in e and audio.have_numpy()):
                 bad.append(f.name)
     return bad
 

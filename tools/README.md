@@ -43,3 +43,5 @@ play. `add-song.py` and `compress-audio.py` keep it up to date; `check.py` warns
     python3 tools/check.py --deep     # also test-decode every audio file (1-2 min) for damaged streams
 
 Run it before every push. It also fails if any audio is over 128 kbps. Preview locally with `python3 -m http.server`.
+
+Note: `make-peaks.py` also stores each track's estimated key(s) in `peaks.json` (needs numpy: `pip install numpy`).
