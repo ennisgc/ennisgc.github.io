@@ -56,18 +56,8 @@ audio {
 .genre-label.Co { background-color: var(--blue); }
 
 .genre-label.X {
-  color: transparent; /* hides the 'X' text */
-  position: relative;
+  color: black; /* the 🎅 is plain text in the HTML */
 }
-
-.genre-label.X::after {
-  content: "🎅";
-  color: black; /* visible emoji color */
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
 
 /* Lyrics: full-width offcanvas on mobile, sticky side panel on desktop */
 @media (max-width: 991.98px) {

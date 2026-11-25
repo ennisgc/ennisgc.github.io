@@ -89,7 +89,7 @@
     const esc = s => String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const byTitle = (a, b) => a.title.localeCompare(b.title); // alphabetical
-    const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}">${esc(s.genre)}</span>${esc(s.title)}</a>`;
+    const link = s => `<a href="songs/${esc(s.slug)}/" class="list-group-item list-group-item-action"><span class="genre-label ${esc(s.genre)}" data-code="${esc(s.genre)}">${s.genre === 'X' ? '🎅' : esc(s.genre)}</span>${esc(s.title)}</a>`;
 
     let selectedGenre = 'all';
     const songFilterInput = document.getElementById('songFilter');
@@ -98,7 +98,7 @@
     function applyFilters() {
       const text = songFilterInput.value.toLowerCase();
       document.querySelectorAll('#songList a').forEach(item => {
-        const genre = item.querySelector('.genre-label')?.textContent.trim() || 'Co';
+        const genre = item.querySelector('.genre-label')?.dataset.code || 'Co';
         const ok = (selectedGenre === 'all' || genre === selectedGenre) &&
                    item.textContent.toLowerCase().includes(text);
         item.style.display = ok ? '' : 'none';
