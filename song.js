@@ -63,7 +63,10 @@
           <button class="btn btn-primary mx-auto mb-3 d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#lyricsOffcanvas" aria-controls="lyricsOffcanvas"><span class="h2">View Lyrics</span></button>
         </div>
       </div>
-      <button type="button" class="lyrics-tab d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#lyricsOffcanvas" aria-controls="lyricsOffcanvas" aria-label="Show lyrics">Lyrics</button>
+      <div class="side-tabs d-lg-none">
+        <button type="button" class="side-tab lyrics-tab" data-bs-toggle="offcanvas" data-bs-target="#lyricsOffcanvas" aria-controls="lyricsOffcanvas" aria-label="Show lyrics">Lyrics</button>
+        <button type="button" class="side-tab keyboard-tab" data-bs-toggle="offcanvas" data-bs-target="#keyboardOffcanvas" aria-controls="keyboardOffcanvas" aria-label="Open keyboard"><svg viewBox="0 0 16 24" width="14" height="21" aria-hidden="true"><g transform="translate(16 0) rotate(90)"><rect x="0.75" y="0.75" width="22.5" height="14.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 1v14M12 1v14M18 1v14" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 1h3v8h-3zM10.5 1h3v8h-3zM16.5 1h3v8h-3z" fill="currentColor"/></g></svg>Keyboard</button>
+      </div>
       <div class="row song-layout">
         <div class="col-12 col-lg-7 song-main">
           ${sections}

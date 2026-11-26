@@ -48,7 +48,7 @@ Genre codes used throughout: `X` = Christmas, `G` = Gospel, `Co` = Contemporary.
 
 If a CDN script fails, the plain `<audio>` controls remain and the page still works. That is deliberate.
 
-**Lyrics panel**: on screens >= 992 px it is a sticky side column; below that it is a full-width offcanvas opened by "View Lyrics". It is one element using Bootstrap's `offcanvas-lg`. Below 992 px a slim fixed "Lyrics" tab (`.lyrics-tab`, right edge, vertically centred) also opens it from anywhere on the page; `#app` has extra right padding there so the tab never covers content.
+**Lyrics panel**: on screens >= 992 px it is a sticky side column; below that it is a full-width offcanvas opened by "View Lyrics". It is one element using Bootstrap's `offcanvas-lg`. Below 992 px slim fixed tabs on the right edge (`.side-tabs`, vertically centred: blue "Lyrics" and, below it, a white "Keyboard" tab that opens the keyboard) mean the lyrics also open from anywhere on the page; `#app` has extra right padding there so the tab never covers content.
 
 **Players (`player.js`)** for each track:
 - Waveform drawn from `peaks.json`, so the audio file is not downloaded until the user presses play.
