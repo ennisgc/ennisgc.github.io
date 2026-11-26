@@ -1,16 +1,15 @@
 {
   "title": "What The Lord Has Done In Me (Hosanna)",
-  "videos": [
-    {
-      "id": "bFNfvvy2Lws",
-      "title": "What The Lord Has Done In Me (Hosanna)"
-    },
-    {
-      "id": "h7--kGfRVlg",
-      "title": "What The Lord Has Done In Me (Hosanna)"
-    }
-  ],
   "sections": [
+    {
+      "heading": "Backing Tracks / Recordings",
+      "tracks": [
+        {
+          "label": "Backing Track",
+          "file": "backing-track.m4a"
+        }
+      ]
+    },
     {
       "heading": "Line Tapes",
       "tracks": [
@@ -25,6 +24,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

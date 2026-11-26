@@ -1,11 +1,5 @@
 {
   "title": "Happy Christmas (War is Over)",
-  "videos": [
-    {
-      "id": "8JhBG5UyYP8",
-      "title": "Happy Christmas (War is Over)"
-    }
-  ],
   "sections": [
     {
       "heading": "Line Tapes",
@@ -21,6 +15,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

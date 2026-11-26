@@ -1,6 +1,5 @@
 {
   "title": "Song Title",
-  "videos": [{ "id": "YOUTUBE_VIDEO_ID", "title": "Song Title" }],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -13,6 +12,10 @@
         { "label": "Alto", "file": "line-tape-alto.mp3" },
         { "label": "Men", "file": "line-tape-men.mp3" }
       ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [{ "label": "Original Audio", "file": "original-audio.m4a" }]
     }
   ],
   "lyrics": "lyrics.txt"

@@ -1,11 +1,5 @@
 {
   "title": "My Life is in Your Hands",
-  "videos": [
-    {
-      "id": "u6eoPzwdR9Q",
-      "title": "My Life is in Your Hands"
-    }
-  ],
   "sections": [
     {
       "heading": "Line Tapes",
@@ -30,6 +24,15 @@
         {
           "label": "Phone Recording (Men Focused)",
           "file": "phone-recording-men-focused.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

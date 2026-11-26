@@ -2,7 +2,7 @@
 """Add a new song to the site.
 
     tools/add-song.py "Song Title" --genre X --audio backing.mp3 alto.m4a men.wav \\
-        --video https://www.youtube.com/watch?v=XXXXXXXXXXX --lyrics lyrics.txt --performance
+        --lyrics lyrics.txt --performance
 
 What it does:
   * creates songs/<slug>/ from songs/_template/
@@ -13,6 +13,7 @@ What it does:
 
 Genres: X = Christmas, G = Gospel, Co = Contemporary.
 Audio file names are matched on keywords (case-insensitive):
+  original / og                         -> Original Audio (the full song as released; own "Full Song" section)
   backing / bt / karaoke / instrumental -> Backing Track
   soprano / alto / men / tenor / bass   -> Line Tape (e.g. "men-soprano" -> "Men & Soprano")
   anything else                         -> Practice Recording
@@ -43,15 +44,6 @@ def slugify(text):
     return re.sub(r"[^a-z0-9]+", "-", text).strip("-")
 
 
-def video_id(value):
-    m = re.search(r"(?:v=|youtu\.be/|embed/|shorts/)([A-Za-z0-9_-]{11})", value)
-    if m:
-        return m.group(1)
-    if re.fullmatch(r"[A-Za-z0-9_-]{11}", value):
-        return value
-    sys.exit(f"Could not find a YouTube video ID in: {value}")
-
-
 def classify(path):
     """Return (kind, label, base) for an audio file name."""
     stem = re.sub(r"[^a-z0-9]+", " ", path.stem.lower()).split()
@@ -59,6 +51,8 @@ def classify(path):
     if parts:
         label = " & ".join(parts)
         return "line", label, "line-tape-" + slugify(label)
+    if {"original", "og"} & set(stem):
+        return "orig", "Original Audio", "original-audio"
     if BACKING_WORDS & set(stem):
         return "rec", "Backing Track", "backing-track"
     label = "Practice Recording"
@@ -72,7 +66,6 @@ def main():
     ap.add_argument("title")
     ap.add_argument("--genre", "-g", required=True, choices=GENRES, help="X, G or Co")
     ap.add_argument("--audio", "-a", nargs="*", default=[], type=Path)
-    ap.add_argument("--video", "-v", action="append", default=[], help="YouTube URL or ID (repeatable)")
     ap.add_argument("--lyrics", "-l", type=Path, help="text file with the lyrics")
     ap.add_argument("--slug", help="override the folder name")
     ap.add_argument("--performance", "-p", action="store_true", help="also add to the performance list")
@@ -96,7 +89,7 @@ def main():
         folder.mkdir(parents=True)
         shutil.copy(SONGS / "_template" / "index.html", folder / "index.html")
 
-    rec, line, used = [], [], set()
+    rec, line, orig, used = [], [], [], set()
     if args.audio:
         print("  Audio:")
     for src in sorted(args.audio, key=lambda p: p.name.lower()):
@@ -112,7 +105,7 @@ def main():
         except Exception as e:
             sys.exit(f"Could not import {src.name}: {e}")
         print(f"    {src.name}  ->  {name}  ({how})")
-        (line if kind == "line" else rec).append({"label": label, "file": name})
+        {"line": line, "orig": orig}.get(kind, rec).append({"label": label, "file": name})
     rec.sort(key=lambda t: t["label"] != "Backing Track")  # backing track first
 
     sections = []
@@ -120,9 +113,10 @@ def main():
         sections.append({"heading": "Backing Tracks / Recordings", "tracks": rec})
     if line:
         sections.append({"heading": "Line Tapes", "tracks": line})
+    if orig:
+        sections.append({"heading": "Full Song", "tracks": orig})
     song = {
         "title": args.title,
-        "videos": [{"id": video_id(v), "title": args.title} for v in args.video],
         "sections": sections,
         "lyrics": "lyrics.txt",
     }
@@ -142,8 +136,8 @@ def main():
     todo = []
     if not args.lyrics:
         todo.append(f"paste the lyrics into songs/{slug}/lyrics.txt")
-    if not args.video:
-        todo.append(f'add a YouTube video: "videos": [{{"id": "...", "title": "..."}}] in songs/{slug}/song.json')
+    if not orig:
+        todo.append(f'add the original audio (name the file "original", e.g. original.m4a) so it lands under "Full Song" in songs/{slug}/song.json')
     if not args.audio:
         todo.append(f"drop audio into songs/{slug}/ and list it in song.json")
     print("\nDone." if not args.dry_run else "\nNothing was changed (dry run).")

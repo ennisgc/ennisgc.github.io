@@ -1,11 +1,5 @@
 {
   "title": "I Wish it Could be Christmas Everyday",
-  "videos": [
-    {
-      "id": "IJPc7esgvsA",
-      "title": "I Wish it Could be Christmas Everyday"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -13,6 +7,15 @@
         {
           "label": "Backing Track",
           "file": "backing-track.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

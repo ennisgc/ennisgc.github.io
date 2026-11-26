@@ -10,12 +10,12 @@ Errors (things that break a page):
   - bad genre, performance entry that isn't a song, unknown performanceOrder
   - song.json missing/invalid, a listed audio file that doesn't exist, missing lyrics.txt
   - a song folder without its index.html, or an index.html that differs from the template
-  - a placeholder or malformed YouTube ID
+  - (YouTube IDs are no longer used)
   - audio over 128 kbps (fix with: python3 tools/compress-audio.py)
   - an old redirect page (e.g. jingle-bells.html) pointing at a missing folder
 
 Warnings (worth a look):
-  - lyrics missing or just a placeholder, no video, no audio at all
+  - lyrics missing or just a placeholder, no Original Audio track, no audio at all
   - audio in a format that may not play everywhere (.wav, .mp4, .flac, ...)
   - waveform data (peaks.json) missing or out of date (python3 tools/make-peaks.py)
   - audio files in a folder that no song.json uses, or unsafe file names (spaces etc.)
@@ -146,12 +146,9 @@ def check_song(folder, slug, template):
     if tracks == 0:
         warn(where, "no audio listed")
 
-    for v in song.get("videos", []):
-        vid = v.get("id", "")
-        if not re.fullmatch(r"[A-Za-z0-9_-]{11}", vid):
-            err(where, f"video id '{vid}' is not a valid YouTube id")
-    if not song.get("videos"):
-        warn(where, "no video")
+    if not any("original audio" in t.get("label", "").lower()
+               for sec in song.get("sections", []) for t in sec.get("tracks", [])):
+        warn(where, "no Original Audio track")
 
     ly = folder / song.get("lyrics", "lyrics.txt")
     if not ly.is_file():

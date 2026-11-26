@@ -18,6 +18,15 @@
           "file": "line-tape-soprano.m4a"
         }
       ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
+        }
+      ]
     }
   ],
   "lyrics": "lyrics.txt"

@@ -1,6 +1,6 @@
 # Ennis Gospel Choir: song practice site
 
-A static website (GitHub Pages, `ennisgc/ennisgc.github.io`, branch `main`) where choir members find, for each song: backing tracks, line tapes (one voice part at a time), practice recordings, a YouTube video and the lyrics. There is no server, no framework and no build step. Everything is plain HTML, CSS and JavaScript that runs in the browser, plus small Python tools for maintaining the data.
+A static website (GitHub Pages, `ennisgc/ennisgc.github.io`, branch `main`) where choir members find, for each song: backing tracks, line tapes (one voice part at a time), practice recordings, the original audio of the song (a copy of the YouTube track) and the lyrics. There is no server, no framework and no build step. Everything is plain HTML, CSS and JavaScript that runs in the browser, plus small Python tools for maintaining the data.
 
 This file is written for both people and AI agents who need to change the site. **Read "Rules that matter" before editing.**
 
@@ -13,7 +13,7 @@ index.html            Home page. Builds its lists from songs.json in the browser
 songs.json            Master list of songs (slug, title, genre) + performance list + its sort mode.
 songs/<slug>/         ONE FOLDER PER SONG (this is where almost all content lives):
     index.html        Identical in every folder (a tiny shell). Never edit per song.
-    song.json         Title, YouTube videos, audio tracks. Describes the page.
+    song.json         Title and audio tracks. Describes the page.
     lyrics.txt        Plain-text lyrics.
     *.mp3 / *.m4a     Audio (128 kbps max).
     peaks.json        Pre-computed waveform data for the audio above (generated, do not hand-edit).
@@ -39,7 +39,7 @@ Genre codes used throughout: `X` = Christmas, `G` = Gospel, `Co` = Contemporary.
 **Home page (`index.html`)** fetches `songs.json` and draws:
 - *Current Performance List*: the songs named in `songs.json -> performance`. Alphabetical unless `"performanceOrder": "custom"`, in which case the array order is kept (for a strict set list).
 - *All Songs*: every song, always alphabetical, with genre filter buttons and a text filter.
-- Two accordions at the top: **Latest Updates** (hand-written HTML, newest first, split Content / Technical, each item dated) and **Song Status** (a table built in the browser by reading every `song.json` and `lyrics.txt`: green Yes / red No for backing track, recording, soprano/alto/men line tape, video, lyrics).
+- Two accordions at the top: **Latest Updates** (hand-written HTML, newest first, split Content / Technical, each item dated) and **Song Status** (a table built in the browser by reading every `song.json` and `lyrics.txt`: green Yes / red No for backing track, recording, soprano/alto/men line tape, OG Audio, lyrics).
 
 **Song page** (`songs/<slug>/index.html`) is a shell that loads `song.js`, which:
 1. fetches `song.json` and `lyrics.txt` from the same folder,
@@ -75,17 +75,19 @@ If a CDN script fails, the plain `<audio>` controls remain and the page still wo
 ```json
 {
   "title": "Jingle Bells",
-  "videos": [ { "id": "11-char-YouTube-id", "title": "Jingle Bells" } ],
   "sections": [
     { "heading": "Backing Tracks / Recordings",
       "tracks": [ { "label": "Backing Track", "file": "backing-track.mp3" } ] },
     { "heading": "Line Tapes",
-      "tracks": [ { "label": "Soprano", "file": "line-tape-soprano.mp3" } ] }
+      "tracks": [ { "label": "Soprano", "file": "line-tape-soprano.mp3" } ] },
+    { "heading": "Full Song",
+      "tracks": [ { "label": "Original Audio", "file": "original-audio.m4a" } ] }
   ],
   "lyrics": "lyrics.txt"
 }
 ```
 - A section whose heading starts with `Line Tapes` gets note detection and counts for the status table's Soprano/Alto/Men columns (label is matched on the words soprano, alto, men; "Men & Soprano" counts as both).
+- Original Audio = a track whose label contains "original audio" (conventionally file `original-audio.m4a` under the "Full Song" heading); it is the song as released, kept from YouTube, and fills the status table's OG Audio column.
 - Backing track = label containing "backing track" (or "all tracks mixed"); recording = label containing "recording".
 - `peaks.json` maps file name -> `{ "size": bytes, "duration": s, "peaks": [500 numbers 0..1] }`. It is stale if `size` no longer matches the file.
 
@@ -101,7 +103,7 @@ python3 tools/check.py
 ```
 It creates the folder, classifies/compresses/converts audio, writes `song.json`, `lyrics.txt`, `peaks.json`, registers the song in `songs.json` and prints what is still to do. Add `--dry-run` to preview. Then preview locally (below), commit and push.
 
-**Change lyrics / video / labels:** edit `lyrics.txt` or `song.json` in the song folder. Nothing else to update.
+**Change lyrics / labels:** edit `lyrics.txt` or `song.json` in the song folder. Nothing else to update.
 
 **Add or replace audio manually:** put the file in the song folder, list it in `song.json`, then run `python3 tools/compress-audio.py` (fixes bitrate/format/damaged streams and rebuilds `peaks.json`) and `python3 tools/check.py --deep`.
 
@@ -118,9 +120,9 @@ It creates the folder, classifies/compresses/converts audio, writes `song.json`,
 | `add-song.py` | Create a song (see above). |
 | `compress-audio.py [--dry-run\|--check]` | Bring all audio to <= 128 kbps, turn `.wav`/`.mp4`/etc. into `.m4a`, re-encode files with damaged streams, update `song.json` renames, rebuild `peaks.json`. Idempotent. |
 | `make-peaks.py [--all\|--check]` | Build/refresh `peaks.json` waveform data. |
-| `check.py [--strict\|--deep]` | Validate everything. Errors fail (exit 1): missing files/folders, bad genre or YouTube id, `index.html` differing from the template, audio over 128 kbps, broken redirect stubs. Warnings: missing lyrics/video/audio, non-mp3/m4a audio, stale waveform data, unused or oddly named audio. `--deep` test-decodes every audio file (1-2 min). |
+| `check.py [--strict\|--deep]` | Validate everything. Errors fail (exit 1): missing files/folders, bad genre, `index.html` differing from the template, audio over 128 kbps, broken redirect stubs. Warnings: missing lyrics/Original Audio/audio, non-mp3/m4a audio, stale waveform data, unused or oddly named audio. `--deep` test-decodes every audio file (1-2 min). |
 
-**Run `python3 tools/check.py` before every push.** Its warnings are the live to-do list for missing content (e.g. songs without a video); do not hard-code that list anywhere.
+**Run `python3 tools/check.py` before every push.** Its warnings are the live to-do list for missing content (e.g. songs without Original Audio); do not hard-code that list anywhere.
 
 ## 6. Rules that matter (read before editing)
 
@@ -161,7 +163,7 @@ There is no test suite. Use this routine:
 - A GitHub Action running `tools/check.py` on every push (needs the `workflow` token scope).
 - Web MIDI input from a real keyboard.
 - One-time key detection per song for display (currently the nearest semitone is shown, deliberately not snapped to a key).
-- Missing content is listed live by `python3 tools/check.py` (videos, lyrics, audio).
+- Missing content is listed live by `python3 tools/check.py` (Original Audio, lyrics, audio).
 
 
 ## Report an issue (Google Form)

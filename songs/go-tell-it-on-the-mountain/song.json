@@ -1,11 +1,5 @@
 {
   "title": "Go Tell It on the Mountain",
-  "videos": [
-    {
-      "id": "Rgu-vTybMwY",
-      "title": "Go Tell It on the Mountain - Karaoke"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -26,6 +20,15 @@
         {
           "label": "Men & Soprano",
           "file": "line-tape-men-soprano.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

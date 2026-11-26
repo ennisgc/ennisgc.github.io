@@ -1,11 +1,5 @@
 {
   "title": "Roar",
-  "videos": [
-    {
-      "id": "CevxZvSJLk8",
-      "title": "Roar"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -21,6 +15,15 @@
         {
           "label": "Practice Recording (Men Focused - Piano Backing)",
           "file": "practice-recording-men-focused-piano-backing.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

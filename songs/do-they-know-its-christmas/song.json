@@ -1,11 +1,5 @@
 {
   "title": "Do They Know It's Christmas?",
-  "videos": [
-    {
-      "id": "FEZ5GOCcC0k",
-      "title": "Do They Know It's Christmas? - Karaoke"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -13,6 +7,15 @@
         {
           "label": "Backing Track",
           "file": "backing-track.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

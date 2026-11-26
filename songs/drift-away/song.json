@@ -1,11 +1,5 @@
 {
   "title": "Drift Away",
-  "videos": [
-    {
-      "id": "NIuyDWzctgY",
-      "title": "Drift Away"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -21,6 +15,15 @@
         {
           "label": "Practice Recording (Men Focused)",
           "file": "practice-recording-men-focused.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.mp3"
         }
       ]
     }

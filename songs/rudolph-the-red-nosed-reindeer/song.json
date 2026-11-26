@@ -1,11 +1,5 @@
 {
   "title": "Rudolph The Red-Nosed Reindeer",
-  "videos": [
-    {
-      "id": "fJQqOzkcHjg",
-      "title": "Rudolph The Red-Nosed Reindeer"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -22,6 +16,15 @@
         {
           "label": "Soprano",
           "file": "line-tape-soprano.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

@@ -1,11 +1,5 @@
 {
   "title": "All We Ask",
-  "videos": [
-    {
-      "id": "s-5h89CWxPo",
-      "title": "All We Ask"
-    }
-  ],
   "sections": [
     {
       "heading": "Line Tapes",
@@ -21,6 +15,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

@@ -10,6 +10,15 @@
           "file": "practice-recording-all.mp3"
         }
       ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
+        }
+      ]
     }
   ],
   "lyrics": "lyrics.txt"

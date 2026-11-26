@@ -1,11 +1,5 @@
 {
   "title": "Ho Hey",
-  "videos": [
-    {
-      "id": "zvCBSSwgtg4",
-      "title": "Ho Hey"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -30,6 +24,15 @@
         {
           "label": "Alto",
           "file": "line-tape-alto.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

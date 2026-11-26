@@ -28,6 +28,7 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Content</h3>
                 <ul class="mb-0 update-list">
+                  <li><span class="text-muted me-1">26 Nov</span> The YouTube videos have been replaced by <strong>Original Audio</strong> players (the full song, with waveform, looping and speed control). What The Lord Has Done In Me also gains a backing track. The Song Status column "Video" is now "OG Audio".</li>
                   <li><span class="text-muted me-1">25 Nov</span> Keyboard is easier to tap on a phone: fewer, bigger keys (use Octave - / + to move), wider black keys with a bigger touch area, and a large note name above the keys while you press.</li>
                   <li><span class="text-muted me-1">25 Nov</span> New <strong>How to use</strong> button under Loop controls: a pop-up with screenshots explaining how to loop a section (drag, or Tap to set).</li>
                   <li><span class="text-muted me-1">25 Nov</span> Added the song <strong>One Call Away</strong> (soprano, alto and men line tapes and lyrics).</li>
@@ -53,6 +54,7 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
                 <ul class="mb-0 update-list">
+                  <li><span class="text-muted me-1">26 Nov</span> Removed the <code>videos</code> field and YouTube embeds from <code>song.json</code>, <code>song.js</code>, <code>add-song.py</code> and <code>check.py</code>. The original audio is a normal track (label <code>Original Audio</code>, file <code>original-audio.m4a|mp3</code>, section <code>Full Song</code>); <code>check.py</code> warns when it is missing.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Added the optional Report an issue form: set <code>reportForm</code> in <code>songs.json</code> (form URL and <code>entry.NNN</code> ids). Buttons stay hidden while it is empty (see <code>README.md</code>).</li>
                   <li><span class="text-muted me-1">25 Nov</span> Keys come from <code>tools/audio.py</code> (<code>compute_keys</code>, needs numpy) and are stored in each track's <code>peaks.json</code> entry; <code>make-peaks.py</code> and <code>check.py</code> treat a missing key as out of date. Piano samples (Salamander Grand, CC-BY) are in <code>samples/piano/</code>.</li>
                   <li><span class="text-muted me-1">25 Nov</span> Note detection is line tapes only, with a per-voice pitch range, notes stored per 0.1 s slot as note names, and bar height from a tracked octave (details in <code>README.md</code>). Lyrics allow <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> only; everything else is escaped.</li>
@@ -83,7 +85,7 @@
             <div class="table-responsive">
               <table class="table table-sm table-bordered text-center align-middle mb-0 status-table">
                 <thead>
-                  <tr><th class="text-start sortable" tabindex="0" aria-sort="none">Song</th><th class="sortable" tabindex="0" aria-sort="none">Backing</th><th class="sortable" tabindex="0" aria-sort="none">Recording</th><th class="sortable" tabindex="0" aria-sort="none">Soprano LT</th><th class="sortable" tabindex="0" aria-sort="none">Alto LT</th><th class="sortable" tabindex="0" aria-sort="none">Men LT</th><th class="sortable" tabindex="0" aria-sort="none">Video</th><th class="sortable" tabindex="0" aria-sort="none">Lyrics</th></tr>
+                  <tr><th class="text-start sortable" tabindex="0" aria-sort="none">Song</th><th class="sortable" tabindex="0" aria-sort="none">Backing</th><th class="sortable" tabindex="0" aria-sort="none">Recording</th><th class="sortable" tabindex="0" aria-sort="none">Soprano LT</th><th class="sortable" tabindex="0" aria-sort="none">Alto LT</th><th class="sortable" tabindex="0" aria-sort="none">Men LT</th><th class="sortable" tabindex="0" aria-sort="none">OG Audio</th><th class="sortable" tabindex="0" aria-sort="none">Lyrics</th></tr>
                 </thead>
                 <tbody id="statusRows"><tr><td colspan="8">Loading…</td></tr></tbody>
               </table>
@@ -92,7 +94,7 @@
         </div>
       </div>
     </div>
-    <div class="row g-5 pt-4">
+    <div class="row gy-5 gx-md-5 pt-4">
       <div class="col-12 col-md-8">
         <h2>Current Performance List</h2>
         <div class="list-group" id="performanceList"></div>
@@ -154,7 +156,7 @@
             tracks.some(t => /backing track|all tracks mixed/i.test(t.label)),
             tracks.some(t => /recording/i.test(t.label)),
             lt('soprano'), lt('alto'), lt('men'),
-            (song.videos || []).length > 0,
+            tracks.some(t => /original audio/i.test(t.label)),
             lyrics.trim().length > 40
           ];
           return { title: s.title, flags, html: `<tr><td class="text-start"><a href="${base}">${esc(s.title)}</a></td>${

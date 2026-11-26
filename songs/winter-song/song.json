@@ -1,11 +1,5 @@
 {
   "title": "Winter Song",
-  "videos": [
-    {
-      "id": "mHSkp5vp_1k",
-      "title": "Winter Song - Karaoke"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -30,6 +24,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }

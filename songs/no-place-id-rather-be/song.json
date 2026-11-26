@@ -1,11 +1,5 @@
 {
   "title": "No Place I'd Rather Be",
-  "videos": [
-    {
-      "id": "m-M1AtrxztU",
-      "title": "No Place I'd Rather Be"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -34,6 +28,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.m4a"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.mp3"
         }
       ]
     }

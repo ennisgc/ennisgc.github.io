@@ -1,11 +1,5 @@
 {
   "title": "Winter Wonderland",
-  "videos": [
-    {
-      "id": "GP5_dJUd3BY",
-      "title": "Winter Wonderland"
-    }
-  ],
   "sections": [
     {
       "heading": "Backing Tracks / Recordings",
@@ -30,6 +24,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.mp3"
         }
       ]
     }

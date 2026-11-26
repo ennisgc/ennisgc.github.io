@@ -49,11 +49,6 @@
           </div>
         </div>`).join('')}`).join('');
 
-    const videos = (song.videos || []).map(v => `
-      <div class="ratio ratio-16x9 mb-3">
-        <iframe src="https://www.youtube.com/embed/${esc(v.id)}" title="${esc(v.title || song.title)}" allowfullscreen></iframe>
-      </div>`).join('');
-
     app.innerHTML = `
       <div class="text-end pt-2 d-none"><a id="reportTop" class="small" target="_blank" rel="noopener"><svg class="report-icon" viewBox="0 0 16 16" width="1em" height="1em" aria-hidden="true"><path d="M2.5 2h11A1.5 1.5 0 0 1 15 3.5v7a1.5 1.5 0 0 1-1.5 1.5H8l-3.5 3v-3h-2A1.5 1.5 0 0 1 1 10.5v-7A1.5 1.5 0 0 1 2.5 2z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 4.6v3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="9.6" r=".85" fill="currentColor"/></svg>Report an issue or leave a note</a></div>
       <div class="row g-3 my-3 align-items-center justify-content-between">
@@ -71,7 +66,6 @@
       <div class="row song-layout">
         <div class="col-12 col-lg-7 song-main">
           ${sections}
-          ${videos ? '<h3 class="mt-4">Full Song</h3>' + videos : ''}
         </div>
         <div class="lyrics-col col-lg-5">
           <div class="offcanvas-lg offcanvas-end lyrics-panel" id="lyricsOffcanvas" tabindex="-1" aria-labelledby="lyricsOffcanvasLabel">

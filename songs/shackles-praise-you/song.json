@@ -1,11 +1,15 @@
 {
   "title": "Shackles (Praise You)",
-  "videos": [
+  "sections": [
     {
-      "id": "V22rG6CNFeU",
-      "title": "Shackles (Praise You)"
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
+        }
+      ]
     }
   ],
-  "sections": [],
   "lyrics": "lyrics.txt"
 }

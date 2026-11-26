@@ -1,11 +1,5 @@
 {
   "title": "Jesus Promised",
-  "videos": [
-    {
-      "id": "v_6aNxW_hk0",
-      "title": "Jesus Promised"
-    }
-  ],
   "sections": [
     {
       "heading": "Line Tapes",
@@ -21,6 +15,15 @@
         {
           "label": "Men",
           "file": "line-tape-men.mp3"
+        }
+      ]
+    },
+    {
+      "heading": "Full Song",
+      "tracks": [
+        {
+          "label": "Original Audio",
+          "file": "original-audio.m4a"
         }
       ]
     }
