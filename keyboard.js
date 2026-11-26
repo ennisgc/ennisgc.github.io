@@ -21,7 +21,7 @@
   // Every instrument is a function (ctx, out, midi, t0) -> { release(now) } built from Web Audio
   // nodes, so nothing needs downloading. LEVEL evens out loudness between instruments.
   const INSTRUMENTS = { piano: 'Piano', choir: 'Choir (ah)', midi: 'MIDI synth' };
-  const LEVEL = { piano: 0.5, choir: 0.4, midi: 1.0 };
+  const LEVEL = { piano: 0.5, choir: 0.22, midi: 1.0 };
   let instrument = localStorage.getItem('keyboardInstrument');
   if (!INSTRUMENTS[instrument]) instrument = 'piano'; // piano unless you picked another before
 
@@ -90,25 +90,32 @@
       SAMPLE_NOTES[m] = `${n}${oct}`;
     }
   });
-  const sampleBuffers = {}; // midi -> AudioBuffer
-  const sampleGain = {};    // midi -> factor that brings every recording to the same peak level
   const normaliser = buf => {
     let peak = 0;
     for (let c = 0; c < buf.numberOfChannels; c++) { const d = buf.getChannelData(c); for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i])); }
     return peak ? 1 / peak : 1;
   };
-  let samplesState = 'idle';
-  function loadPianoSamples() {
-    if (samplesState !== 'idle') return;
-    samplesState = 'loading';
+  // One set per instrument: buffers (midi -> AudioBuffer), gain (midi -> factor to a common peak), state.
+  const sets = {
+    piano: { dir: 'samples/piano/', buffers: {}, gain: {}, state: 'idle' },
+    choir: { dir: 'samples/choir/', buffers: {}, gain: {}, state: 'idle' },
+  };
+  const sampleBuffers = sets.piano.buffers, sampleGain = sets.piano.gain; // (names kept for the piano code below)
+  let samplesState = 'idle'; // piano state, exposed as choirKeyboard.samplesReady()
+  function loadSamples(name) {
+    const set = sets[name];
+    if (set.state !== 'idle') return Promise.resolve();
+    set.state = 'loading';
+    if (name === 'piano') samplesState = 'loading';
     const ctx = getCtx();
-    const base = new URL('samples/piano/', document.querySelector('script[src$="keyboard.js"]').src).href;
-    Promise.all(Object.entries(SAMPLE_NOTES).map(([m, name]) =>
-      fetch(base + name + '.mp3').then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b))
-        .then(buf => { sampleBuffers[m] = buf; sampleGain[m] = normaliser(buf); })))
-      .then(() => { samplesState = 'ready'; })
-      .catch(e => { samplesState = 'failed'; console.warn('Piano samples unavailable, using synthesised piano', e); });
+    const base = new URL(set.dir, document.querySelector('script[src$="keyboard.js"]').src).href;
+    return Promise.all(Object.entries(SAMPLE_NOTES).map(([m, file]) =>
+      fetch(base + file + '.mp3').then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b))
+        .then(buf => { set.buffers[m] = buf; set.gain[m] = normaliser(buf); })))
+      .then(() => { set.state = 'ready'; if (name === 'piano') samplesState = 'ready'; })
+      .catch(e => { set.state = 'failed'; if (name === 'piano') samplesState = 'failed'; console.warn(name + ' samples unavailable, using the synthesised sound', e); });
   }
+  const loadPianoSamples = () => loadSamples('piano');
   function buildPiano(ctx, out, midi, t0) {
     const keys = Object.keys(sampleBuffers).map(Number);
     if (samplesState !== 'ready' || !keys.length) return buildSynthPiano(ctx, out, midi, t0);
@@ -130,7 +137,7 @@
 
   // Choir: three detuned saw waves with a gentle vibrato, shaped by "ah" vowel formants, with a
   // soft attack so it swells in like voices do.
-  function buildChoir(ctx, out, midi, t0) {
+  function buildSynthChoir(ctx, out, midi, t0) {
     const f0 = freq(midi);
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, t0);
@@ -165,6 +172,31 @@
         env.gain.setValueAtTime(env.gain.value, now);
         env.gain.setTargetAtTime(0, now, 0.12);
         oscs.forEach(o => o.stop(now + 0.9));
+      },
+    };
+  }
+
+  // Sampled choir ("Choir Aahs" from FluidR3_GM, CC-BY 3.0, see samples/choir/README.txt): a recording every minor
+  // third, each with a cross-faded seam so it can sustain by looping 0.9 s to 3.1 s while the key is held. Swells in
+  // gently and fades out on release. Uses the synthesised choir above until the samples have loaded.
+  const LOOP_START = 0.9, LOOP_END = 3.1;
+  function buildChoir(ctx, out, midi, t0) {
+    const set = sets.choir, keys = Object.keys(set.buffers).map(Number);
+    if (set.state !== 'ready' || !keys.length) return buildSynthChoir(ctx, out, midi, t0);
+    const root = keys.reduce((a, b) => Math.abs(b - midi) < Math.abs(a - midi) ? b : a);
+    const src = ctx.createBufferSource(), env = ctx.createGain();
+    src.buffer = set.buffers[root];
+    src.loop = true; src.loopStart = LOOP_START; src.loopEnd = LOOP_END;
+    src.playbackRate.value = Math.pow(2, (midi - root) / 12);
+    env.gain.setValueAtTime(0, t0);
+    env.gain.linearRampToValueAtTime(set.gain[root], t0 + 0.12);
+    src.connect(env); env.connect(out); src.start(t0);
+    return {
+      release(now) {
+        env.gain.cancelScheduledValues(now);
+        env.gain.setValueAtTime(env.gain.value, now);
+        env.gain.setTargetAtTime(0, now, 0.15);
+        src.stop(now + 1.2);
       },
     };
   }
@@ -309,7 +341,7 @@
   panel.querySelector('.oct-up').addEventListener('click', () => shift(12));
   panel.querySelector('.instrument').addEventListener('change', e => {
     allOff();
-    instrument = e.target.value;
+    instrument = e.target.value; if (instrument === "choir") loadSamples("choir");
     localStorage.setItem('keyboardInstrument', instrument);
   });
   panel.querySelector('.vol').addEventListener('input', e => { volume = parseFloat(e.target.value); });
@@ -373,6 +405,6 @@
   const hold = (id, midi) => noteOn('ref-' + id, midi, 'piano');
   const releaseRef = id => noteOff('ref-' + id);
 
-  (window.requestIdleCallback || setTimeout)(loadPianoSamples);
+  (window.requestIdleCallback || setTimeout)(() => loadSamples("piano").then(() => loadSamples("choir")));
   window.choirKeyboard = { samplesReady: () => samplesState, hold, release: releaseRef, activeCount: () => voices.size, activeInstruments: () => [...voices.values()].map(v => v.inst), get start() { return start; }, get instrument() { return instrument; }, renderTest };
 })();

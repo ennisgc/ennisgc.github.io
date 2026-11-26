@@ -90,7 +90,6 @@ audio {
   }
   .lyrics-tab { border: 0; background: var(--bs-primary); color: #fff; }
   .keyboard-tab { border: 1px solid var(--bs-primary); border-right: 0; background: #fff; color: var(--bs-primary); }
-  .keyboard-tab svg { margin-bottom: 0.4rem; }
 
   /* keep the tab off the content: a thin strip reserved on the right */
   #app { padding-right: 1.75rem; }
