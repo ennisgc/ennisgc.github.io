@@ -311,6 +311,7 @@ audio {
 .lane-readout.on { opacity: 1; }
 .key-main { font-weight: 600; }
 .report-icon { margin-right: 0.4em; vertical-align: -0.12em; }
+.report-smiley { vertical-align: -0.2em; }
 
 /* White space at the bottom of every page so it's clear it is the end */
 :root { --page-end: 5rem; }
