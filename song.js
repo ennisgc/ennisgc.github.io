@@ -63,6 +63,7 @@
           <button class="btn btn-primary mx-auto mb-3 d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#lyricsOffcanvas" aria-controls="lyricsOffcanvas"><span class="h2">View Lyrics</span></button>
         </div>
       </div>
+      <button type="button" class="lyrics-tab d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#lyricsOffcanvas" aria-controls="lyricsOffcanvas" aria-label="Show lyrics">Lyrics</button>
       <div class="row song-layout">
         <div class="col-12 col-lg-7 song-main">
           ${sections}

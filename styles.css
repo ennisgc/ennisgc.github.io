@@ -66,6 +66,29 @@ audio {
   #lyricsOffcanvas {
     width: 100%;
   }
+
+  /* Slim vertical "Lyrics" tab fixed to the right edge, so lyrics are one tap away however far down the page you are */
+  .lyrics-tab {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1030; /* under the offcanvases (1045), so it is covered when one is open */
+    writing-mode: vertical-rl;
+    padding: 0.9rem 0.2rem;
+    width: 1.6rem;
+    border: 0;
+    border-radius: 0.5rem 0 0 0.5rem;
+    background: var(--bs-primary);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* keep the tab off the content: a thin strip reserved on the right */
+  #app { padding-right: 1.75rem; }
 }
 
 @media (min-width: 992px) {
