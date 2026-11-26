@@ -28,6 +28,7 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Content</h3>
                 <ul class="mb-0 update-list">
+                  <li><span class="text-muted me-1">26 Nov</span> On phones the keyboard now uses the full screen width and has one more white key (10 instead of 9, C to E), so the keys stay about the same size.</li>
                   <li><span class="text-muted me-1">26 Nov</span> A white <strong>Keyboard</strong> tab now sits under the Lyrics tab on the right edge (phones and tablets), opening the keyboard from anywhere on the page.</li>
                   <li><span class="text-muted me-1">26 Nov</span> The report link now reads <strong>Report an error or leave a note</strong> 🙂.</li>
                   <li><span class="text-muted me-1">26 Nov</span> On phones and tablets a slim <strong>Lyrics</strong> tab sits on the right edge of every song page. Tap it to open the lyrics from anywhere on the page, no scrolling back to the top.</li>
@@ -57,6 +58,7 @@
               <div class="col-12 col-md-6">
                 <h3 class="h6 fw-bold">Technical</h3>
                 <ul class="mb-0 update-list">
+                  <li><span class="text-muted me-1">26 Nov</span> Phone keyboard: <code>KEYS</code> is 17 (C to E) below 768 px, and <code>.keyboard-panel .offcanvas-body</code> side padding drops to 0.25 rem so the piano spans the screen.</li>
                   <li><span class="text-muted me-1">26 Nov</span> Both tabs live in <code>.side-tabs</code> (one fixed, centred column in <code>song.js</code>); <code>.keyboard-tab</code> toggles <code>#keyboardOffcanvas</code> and its icon is the keyboard SVG rotated 90 degrees.</li>
                   <li><span class="text-muted me-1">26 Nov</span> Added <code>.lyrics-tab</code> (rendered in <code>song.js</code>, styled in <code>styles.css</code>, hidden at 992 px and up): a fixed button that toggles the existing <code>#lyricsOffcanvas</code>. <code>#app</code> gets 1.75 rem right padding below 992 px to keep it off the content.</li>
                   <li><span class="text-muted me-1">26 Nov</span> Removed the <code>videos</code> field and YouTube embeds from <code>song.json</code>, <code>song.js</code>, <code>add-song.py</code> and <code>check.py</code>. The original audio is a normal track (label <code>Original Audio</code>, file <code>original-audio.m4a|mp3</code>, section <code>Full Song</code>); <code>check.py</code> warns when it is missing.</li>

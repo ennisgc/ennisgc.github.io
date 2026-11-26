@@ -329,6 +329,7 @@ main.pb-5, main { padding-bottom: var(--page-end) !important; } /* beats Bootstr
 .key-readout.on { opacity: 1; }
 .piano .key.black::before { content: ""; position: absolute; inset: 0 -4px -10px; } /* invisible, bigger touch target */
 @media (max-width: 767.98px) {
+  .keyboard-panel .offcanvas-body { padding-left: 0.25rem; padding-right: 0.25rem; } /* keys use the full screen width */
   .piano { height: 270px; }
   .piano .key.white { font-size: 0.8rem; }
   .keyboard-panel .oct-down, .keyboard-panel .oct-up { padding: 0.45rem 0.9rem; font-size: 1rem; }

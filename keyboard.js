@@ -4,7 +4,7 @@
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const BLACK = new Set([1, 3, 6, 8, 10]);
   const narrow = window.matchMedia('(max-width: 767.98px)'); // phones: fewer, bigger keys
-  let KEYS = narrow.matches ? 15 : 25;   // C to D (9 white keys, 15 notes) on phones, C to C (two octaves) otherwise
+  let KEYS = narrow.matches ? 17 : 25;   // C to E (10 white keys, 17 notes) on phones, C to C (two octaves) otherwise
   const MIN_START = 24;                  // lowest C is C1
   const maxStart = () => (narrow.matches ? 72 : 60);
   const COMPUTER_KEYS = 'awsedftgyhujkolp;'.split(''); // a=C ... ;=E (one octave and a bit)
@@ -304,7 +304,7 @@
   function light(midi, on) { const k = keyEl(midi); if (k) k.classList.toggle('down', on); }
 
   function shift(delta) { allOff(); start = Math.min(maxStart(), Math.max(MIN_START, start + delta)); build(); }
-  narrow.addEventListener('change', () => { allOff(); KEYS = narrow.matches ? 15 : 25; start = Math.min(start, maxStart()); build(); });
+  narrow.addEventListener('change', () => { allOff(); KEYS = narrow.matches ? 17 : 25; start = Math.min(start, maxStart()); build(); });
   panel.querySelector('.oct-down').addEventListener('click', () => shift(-12));
   panel.querySelector('.oct-up').addEventListener('click', () => shift(12));
   panel.querySelector('.instrument').addEventListener('change', e => {
