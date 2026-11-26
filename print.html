@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Print Lyrics – Choir Songs</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    /* ---------- Paper (A4). Shown on screen as a preview and used as-is for printing ---------- */
+    @page { size: A4; margin: 0; }
+    :root { --navy: #00006d; --gold: #BE9F57; --lightblue: #d1d1ff; }
+    body { background: #fff; }
+    .sheets { background: #e6e6ee; padding: 16px 0; overflow-x: auto; }
+    .page {
+      position: relative; box-sizing: border-box; overflow: hidden;
+      width: 210mm; height: 296mm; margin: 0 auto 16px; background: #fff;
+      padding: 13mm 12mm 0 12mm; color: #111;
+      font-family: Arial, Helvetica, "Liberation Sans", sans-serif;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      break-after: page; page-break-after: always;
+    }
+    .page:last-child { break-after: auto; page-break-after: auto; margin-bottom: 0; }
+    .cols { display: flex; gap: 8mm; height: 262mm; }
+    .col { flex: 1 1 0; min-width: 0; height: 100%; overflow: hidden; display: flow-root; }
+    .page-foot {
+      position: absolute; left: 12mm; right: 12mm; bottom: 8mm;
+      display: flex; justify-content: space-between; align-items: baseline;
+      border-top: 1.5px solid var(--gold); padding-top: 2mm;
+      font-size: 11pt; color: var(--navy);
+    }
+    .page-foot .num { font-size: 15pt; font-weight: 700; }
+
+    .song { margin-bottom: 7mm; }
+    .song h2 {
+      font-size: 18pt; line-height: 1.15; font-weight: 700; color: var(--navy);
+      margin: 0 0 2.5mm; padding-bottom: 1.5mm; border-bottom: 2px solid var(--gold);
+    }
+    .song h2 small { font-size: 12pt; font-weight: 400; color: #555; }
+    .stanza { margin-bottom: 0.55em; }
+    .line { line-height: 1.28; padding-left: 1.1em; text-indent: -1.1em; }
+    .part {
+      font-size: 11pt; font-weight: 700; letter-spacing: .08em; color: #fff;
+      background: var(--navy); display: inline-block; padding: 0 2.5mm; border-radius: 2mm;
+      margin: 0.8mm 0 0.8mm; line-height: 1.5;
+    }
+
+    /* Front sheet */
+    .front h1 { font-size: 30pt; color: var(--navy); margin: 0 0 1mm; line-height: 1.1; }
+    .front .sub { font-size: 15pt; color: #444; margin-bottom: 4mm; }
+    .front .rule { border-top: 3px solid var(--gold); margin: 3mm 0 5mm; }
+    .front .banner { width: 100%; display: block; margin-bottom: 4mm; }
+    .toc { list-style: none; margin: 0; padding: 0; }
+    .toc li { display: flex; align-items: baseline; padding: 1.3mm 0; border-bottom: 1px dotted #aaa; }
+    .toc .n { width: 2.1em; color: var(--gold); font-weight: 700; }
+    .toc .t { flex: 1 1 auto; font-weight: 600; color: #111; }
+    .toc .p { font-weight: 700; color: var(--navy); margin-left: 3mm; }
+    .toc.two { column-count: 2; column-gap: 8mm; }
+    .toc.two li { break-inside: avoid; }
+    .legend { margin-top: 6mm; font-size: 13pt; color: #333; }
+
+    /* ---------- Controls (screen only) ---------- */
+    .song-pick { columns: 2 260px; column-gap: 24px; }
+    .song-pick label { display: inline-block; cursor: pointer; }
+    .song-pick .pick-row { break-inside: avoid; }
+    .song-pick .off { color: #888; }
+    @media print {
+      .no-print { display: none !important; }
+      body { margin: 0; }
+      .sheets { background: none; padding: 0; overflow: visible; }
+      .page { margin: 0; box-shadow: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+<div class="container no-print py-3" style="color:#000098">
+  <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+    <h1 class="h2 mb-0">Print song lyrics</h1>
+    <a href="./" class="btn btn-secondary">Back to Song List</a>
+  </div>
+  <p class="mb-2">Choose the songs, then press <strong>Print / Save as PDF</strong> and pick "Save as PDF" as the printer to make a file. The sheets below are exactly what will print (A4, with a contents page and page numbers).</p>
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <button type="button" class="btn btn-outline-primary btn-sm" id="selPerf">Current performance set</button>
+    <button type="button" class="btn btn-outline-primary btn-sm" id="selAll">All songs</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" id="selNone">None</button>
+  </div>
+  <div class="song-pick mb-3" id="pick"><span class="text-muted">Loading…</span></div>
+  <div class="row g-3 align-items-end mb-3">
+    <div class="col-6 col-md-2">
+      <label for="fontSize" class="form-label mb-1">Text size (pt)</label>
+      <input type="number" id="fontSize" class="form-control" min="12" max="24" step="1" value="14">
+    </div>
+    <div class="col-6 col-md-2">
+      <label for="colCount" class="form-label mb-1">Columns</label>
+      <select id="colCount" class="form-select"><option value="2">2</option><option value="1">1</option></select>
+    </div>
+    <div class="col-12 col-md-5 small text-muted">Songs that fit on a page are never split over two pages; longer songs start at the top of a page. Shorter songs may move to fill gaps.</div>
+    <div class="col-12 col-md-3 text-md-end">
+      <button type="button" class="btn btn-primary" id="printBtn" disabled>
+        <svg viewBox="0 0 16 16" width="18" height="18" class="me-1" aria-hidden="true"><path d="M4 1.5h8v3H4zM3 5h10a1.5 1.5 0 0 1 1.5 1.5V11H12v-2.5H4V11H1.5V6.5A1.5 1.5 0 0 1 3 5zM4 9.5h8v5H4z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Print / Save as PDF
+      </button>
+    </div>
+  </div>
+  <div id="status" class="small text-muted"></div>
+</div>
+<div class="sheets" id="sheets"></div>
+
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// Same rule as the song pages: only <strong> and <em> are allowed inside lyrics.
+const allowTags = t => esc(t).replace(/&lt;(\/?)(strong|em)&gt;/g, '<$1$2>');
+const $ = id => document.getElementById(id);
+
+let songs = [];          // all songs, in pick order: performance set (in order) then the rest A-Z
+let perfSlugs = [];
+const cache = {};        // slug -> parsed lyrics
+
+// "<strong>S A M </strong>| text"  ->  { part: "S A M", html: "text" }
+function parseLyrics(text) {
+  const raw = text.replace(/\r/g, '').replace(/^(\s*\n)+/, '').trimEnd();
+  if (raw.replace(/<[^>]*>/g, '').trim().length < 40) return null; // placeholder / empty
+  const stanzas = [];
+  let cur = [];
+  for (const line of raw.split('\n')) {
+    if (!line.trim()) { if (cur.length) stanzas.push(cur); cur = []; continue; }
+    const m = line.match(/^\s*<strong>([^<]*)<\/strong>\s*\|\s?(.*)$/);
+    cur.push(m ? { part: m[1].replace(/\s+/g, ' ').trim(), html: allowTags(m[2].trim()) }
+               : { part: null, html: allowTags(line.trim()) });
+  }
+  if (cur.length) stanzas.push(cur);
+  return stanzas;
+}
+
+async function loadLyrics(slug) {
+  if (!(slug in cache)) {
+    try { const r = await fetch(`songs/${slug}/lyrics.txt`); cache[slug] = r.ok ? parseLyrics(await r.text()) : null; }
+    catch (e) { cache[slug] = null; }
+  }
+  return cache[slug];
+}
+
+// ---------- Building elements ----------
+// Part tag shows only when the part changes (and not for the everyone-sings "S A M" at the very start of a song).
+function songEl(song, stanzas, from, to, continued) {
+  const el = document.createElement('div');
+  el.className = 'song';
+  let html = `<h2>${esc(song.title)}${continued ? ' <small>(continued)</small>' : ''}</h2>`;
+  let prev = null;
+  for (let i = from; i < to; i++) {
+    html += '<div class="stanza">';
+    for (const ln of stanzas[i]) {
+      if (ln.part && ln.part !== prev) {
+        const everyone = ln.part === 'S A M';
+        if (!(everyone && prev === null && i === 0 && from === 0)) html += `<div class="part">${esc(ln.part)}</div>`;
+        prev = ln.part;
+      }
+      html += `<div class="line">${ln.html}</div>`;
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+  return el;
+}
+
+function newPage(sheets, cols) {
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.innerHTML = '<div class="cols">' + '<div class="col"></div>'.repeat(cols) + '</div>';
+  sheets.appendChild(page);
+  return page;
+}
+const overflows = col => col.scrollHeight > col.clientHeight + 1;
+
+// ---------- Layout ----------
+// Rules: a song that fits on one page never goes onto a second page (it may run from column 1 into
+// column 2 of the same page). A song longer than a page starts at the top of column 1 of a fresh page
+// and carries on over the following pages. Shorter songs fill any gap (so the order can change).
+function layout(items, opts) {
+  const sheets = $('sheets');
+  sheets.innerHTML = '';
+  sheets.style.fontSize = opts.font + 'pt';
+  const pages = [];
+  const addPage = () => { const el = newPage(sheets, opts.cols); const pg = { el, cols: [...el.querySelectorAll('.col')] }; pages.push(pg); return pg; };
+
+  // Add as many stanzas as fit (from..k) to a column; returns the new element and k (k == from if none fit).
+  function fillColumn(col, song, stanzas, from, force) {
+    const continued = from > 0;
+    let k = from, el = null;
+    while (k < stanzas.length) {
+      const next = songEl(song, stanzas, from, k + 1, continued);
+      if (el) col.replaceChild(next, el); else col.appendChild(next);
+      if (overflows(col)) {
+        if (el) col.replaceChild(songEl(song, stanzas, from, k, continued), next);
+        else if (force && !col.dataset.used) { el = next; k++; continue; }   // one stanza taller than a column: keep it
+        else col.removeChild(next);
+        return { el: el ? col.lastChild : null, k };
+      }
+      el = next; k++;
+    }
+    return { el, k };
+  }
+
+  // Try to put a whole song on an existing page. Returns the pieces placed, or null (nothing changed).
+  function placeInPage(pg, song, stanzas) {
+    const n = stanzas.length;
+    for (const col of pg.cols) {                       // (a) all in one column
+      const el = songEl(song, stanzas, 0, n, false);
+      col.appendChild(el);
+      if (!overflows(col)) return [{ col, el }];
+      col.removeChild(el);
+    }
+    for (let i = 0; i < pg.cols.length - 1; i++) {     // (b) across columns of this page
+      const placed = [];
+      let from = 0, c = i;
+      while (from < n && c < pg.cols.length) {
+        const r = fillColumn(pg.cols[c], song, stanzas, from, false);
+        if (r.k > from) { placed.push({ col: pg.cols[c], el: r.el }); from = r.k; }
+        c++;
+      }
+      if (from >= n) return placed;
+      placed.forEach(x => x.col.removeChild(x.el));
+    }
+    return null;
+  }
+
+  // Which songs fit on a single page? (test on a scratch page)
+  const scratch = addPage();
+  items.forEach(it => { const r = placeInPage(scratch, it.song, it.stanzas); it.short = !!r; if (r) r.forEach(x => x.col.removeChild(x.el)); });
+  pages.pop().el.remove();
+
+  const where = {};
+  for (const it of items) {
+    const { song, stanzas } = it;
+    let done = false;
+    if (it.short) {
+      for (const pg of pages) {
+        const r = placeInPage(pg, song, stanzas);
+        if (r) { where[song.slug] = { pg, col: r[0].col, el: r[0].el }; done = true; break; }
+      }
+      if (!done) { const pg = addPage(); const r = placeInPage(pg, song, stanzas); where[song.slug] = { pg, col: r[0].col, el: r[0].el }; }
+    } else {                                           // long song: fresh page, column 1, flows on
+      let pg = addPage(), c = 0, from = 0;
+      while (from < stanzas.length) {
+        if (c >= opts.cols) { pg = addPage(); c = 0; }
+        const col = pg.cols[c];
+        const r = fillColumn(col, song, stanzas, from, true);
+        if (r.k > from) { if (from === 0) where[song.slug] = { pg, col, el: r.el }; col.dataset.used = '1'; from = r.k; }
+        c++;
+      }
+    }
+  }
+  pages.forEach((pg, i) => {
+    const f = document.createElement('div');
+    f.className = 'page-foot';
+    f.innerHTML = `<span>Ennis Gospel Choir</span><span class="num">${i + 1}</span>`;
+    pg.el.appendChild(f);
+  });
+  // Reading order: page, then column, then position in the column
+  const order = items.map(it => it.song.slug).sort((x, y) => {
+    const a = where[x], b = where[y];
+    return (pages.indexOf(a.pg) - pages.indexOf(b.pg)) || (a.pg.cols.indexOf(a.col) - b.pg.cols.indexOf(b.col)) || (a.el.offsetTop - b.el.offsetTop);
+  });
+  const start = {};
+  order.forEach(sl => { start[sl] = pages.indexOf(where[sl].pg) + 1; });
+  return { start, order };
+}
+
+function frontPage(items, start, label) {  // items already in reading order
+  const p = document.createElement('div');
+  p.className = 'page front';
+  const dense = items.length > 18;
+  const today = new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+  p.innerHTML = `
+    <img class="banner" src="banner-light.svg" alt="">
+    <h1>Song lyrics</h1>
+    <div class="sub">${esc(label)} &middot; ${today}</div>
+    <div class="rule"></div>
+    <ol class="toc${dense ? ' two' : ''}" style="font-size:${dense ? 15 : 18}pt">
+      ${items.map((it, i) => `<li><span class="n">${i + 1}</span><span class="t">${esc(it.song.title)}</span><span class="p">${start[it.song.slug] ?? ''}</span></li>`).join('')}
+    </ol>
+    <div class="legend">The part is shown only where it changes. Everyone sings unless a part is shown:
+      <strong>S</strong> Soprano &nbsp; <strong>A</strong> Alto &nbsp; <strong>M</strong> Men.</div>`;
+  $('sheets').insertBefore(p, $('sheets').firstChild);
+}
+
+// ---------- Page controls ----------
+const chosen = () => [...document.querySelectorAll('#pick input:checked')].map(i => i.value);
+
+async function render() {
+  const slugs = chosen();
+  const opts = {
+    font: Math.min(24, Math.max(12, parseInt($('fontSize').value, 10) || 14)),
+    cols: parseInt($('colCount').value, 10) || 2
+  };
+  $('printBtn').disabled = !slugs.length;
+  if (!slugs.length) { $('sheets').innerHTML = ''; $('status').textContent = 'No songs selected.'; return; }
+  $('status').textContent = 'Laying out…';
+  let items = [];
+  for (const s of songs.filter(x => slugs.includes(x.slug))) {
+    const stanzas = await loadLyrics(s.slug);
+    if (stanzas) items.push({ song: s, stanzas });
+  }
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const { start, order } = layout(items, opts);
+  const moved = order.some((sl, i) => sl !== items[i].song.slug);
+  items = order.map(sl => items.find(it => it.song.slug === sl));
+  const same = slugs.length === perfSlugs.length && perfSlugs.every(s => slugs.includes(s));
+  frontPage(items, start, same ? 'Current Performance List' : 'Selected songs');
+  const pageCount = $('sheets').querySelectorAll('.page').length;
+  $('status').textContent = `${items.length} song${items.length === 1 ? '' : 's'}, ${pageCount} page${pageCount === 1 ? '' : 's'} (including the contents page).` + (moved ? ' Some songs were moved so that no song splits across pages.' : '');
+}
+
+let timer;
+const rerender = () => { clearTimeout(timer); timer = setTimeout(render, 150); };
+
+function setChecked(pred) {
+  document.querySelectorAll('#pick input').forEach(i => { if (!i.disabled) i.checked = pred(i.value); });
+  render();
+}
+
+fetch('songs.json').then(r => r.json()).then(async data => {
+  const bySlug = Object.fromEntries(data.songs.map(s => [s.slug, s]));
+  perfSlugs = data.performance.filter(sl => bySlug[sl]);
+  const perf = perfSlugs.map(sl => bySlug[sl]);
+  if (data.performanceOrder !== 'custom') perf.sort((a, b) => a.title.localeCompare(b.title));
+  perfSlugs = perf.map(s => s.slug);
+  const rest = data.songs.filter(s => !perfSlugs.includes(s.slug)).sort((a, b) => a.title.localeCompare(b.title));
+  songs = [...perf, ...rest];
+  // which songs actually have lyrics?
+  await Promise.all(songs.map(s => loadLyrics(s.slug)));
+  const row = s => {
+    const has = !!cache[s.slug];
+    return `<div class="pick-row"><label class="${has ? '' : 'off'}"><input type="checkbox" class="form-check-input me-2" value="${esc(s.slug)}"${has ? '' : ' disabled'}>${esc(s.title)}${has ? '' : ' (no lyrics yet)'}</label></div>`;
+  };
+  $('pick').innerHTML = `<div class="fw-bold mb-1">Current performance list</div>${perf.map(row).join('')}<div class="fw-bold mt-2 mb-1">Other songs</div>${rest.map(row).join('')}`;
+  const want = new URLSearchParams(location.search).get('songs');
+  const initial = want ? want.split(',') : perfSlugs;
+  setChecked(v => initial.includes(v));
+  $('pick').addEventListener('change', render);
+  $('fontSize').addEventListener('input', rerender);
+  $('colCount').addEventListener('change', render);
+  $('selPerf').addEventListener('click', () => setChecked(v => perfSlugs.includes(v)));
+  $('selAll').addEventListener('click', () => setChecked(() => true));
+  $('selNone').addEventListener('click', () => setChecked(() => false));
+  $('printBtn').addEventListener('click', () => window.print());
+}).catch(e => {
+  console.error(e);
+  $('pick').innerHTML = '<div class="alert alert-danger">Could not load songs.json. If you opened this file directly, run <code>python3 -m http.server</code>.</div>';
+});
+</script>
+</body>
+</html>

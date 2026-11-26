@@ -10,6 +10,7 @@ This file is written for both people and AI agents who need to change the site. 
 
 ```
 index.html            Home page. Builds its lists from songs.json in the browser.
+print.html            Print / Save-as-PDF lyrics sheets (opened from the "Print lyrics" button by the Current Performance List). Self-contained page + its own print CSS.
 songs.json            Master list of songs (slug, title, genre) + performance list + its sort mode.
 songs/<slug>/         ONE FOLDER PER SONG (this is where almost all content lives):
     index.html        Identical in every folder (a tiny shell). Never edit per song.
@@ -59,6 +60,8 @@ If a CDN script fails, the plain `<audio>` controls remain and the page still wo
 - `note-detected` events light the matching key on the keyboard.
 
 **Keyboard (`keyboard.js`)**: opens from the left. On screens >= 992 px it adds `body.keyboard-open`, which shifts the page right by the panel width (520 px) and stacks the lyrics under the players, so nothing is covered; on phones it is a full-screen overlay. 25 keys (two octaves, C to C), octave shift, volume, Sound selector (Piano default, Choir (ah), MIDI synth; remembered in `localStorage.keyboardInstrument`). Mouse, multi-touch with gliding, and computer keys (A W S E D F T G Y H U J K ...) when the panel is open. MIDI is synthesised with Web Audio. Choir uses real "aah" recordings (FluidR3_GM Choir Aahs, CC-BY 3.0, 0.6 MB in `samples/choir/`, one every minor third, each with a cross-faded seam and looped 0.9-3.1 s so a held key sustains; loaded after the piano, or when Choir is chosen); until they load, or if they fail, it falls back to the old synthesised choir (`buildSynthChoir`). The Piano uses real recordings (Salamander Grand, CC-BY 3.0, 1.4 MB in `samples/piano/`, one every minor third, pitch-shifted between, loaded when the browser is idle); until they load, or if they fail, it falls back to a synthesised piano (`buildSynthPiano`). `LEVEL` in the file balances loudness between instruments (measured with an offline render via `choirKeyboard.renderTest`).
+
+**Print lyrics (`print.html`)**: loads `songs.json` and each `lyrics.txt`, lets the user tick songs (default: the performance list) and lays them out as A4 sheets in the browser: contents page first, then pages of 2 columns (or 1) at 14 pt text / 18 pt titles (size adjustable), page numbers in the footer. Printing (or "Save as PDF") uses the browser's print dialog, so there is no docx/PDF generator to maintain. Layout rules (in `layout()`): a song that fits on one page is never split over two pages (it may run from column 1 to column 2); a song longer than a page starts at the top of column 1 of a new page and flows on; shorter songs fill any gap, so the song order can change (the contents page shows the final order). The part tag (S / A / M) is only shown where it changes. Pages are fixed-size `div`s measured in the browser, so page numbers in the contents are exact.
 
 ## 3. Data formats
 
