@@ -46,17 +46,16 @@
 
     /* Front sheet */
     .front h1 { font-size: 30pt; color: var(--navy); margin: 0 0 1mm; line-height: 1.1; }
-    .front .sub { font-size: 15pt; color: #444; margin-bottom: 4mm; }
+    .front .sub { font-size: 14pt; color: #444; margin-bottom: 4mm; }
     .front .rule { border-top: 3px solid var(--gold); margin: 3mm 0 5mm; }
     .front .banner { width: 100%; display: block; margin-bottom: 4mm; }
     .toc { list-style: none; margin: 0; padding: 0; }
     .toc li { display: flex; align-items: baseline; padding: 1.3mm 0; border-bottom: 1px dotted #aaa; }
-    .toc .n { width: 2.1em; color: var(--gold); font-weight: 700; }
     .toc .t { flex: 1 1 auto; font-weight: 600; color: #111; }
     .toc .p { font-weight: 700; color: var(--navy); margin-left: 3mm; }
     .toc.two { column-count: 2; column-gap: 8mm; }
     .toc.two li { break-inside: avoid; }
-    .legend { margin-top: 6mm; font-size: 13pt; color: #333; }
+    .legend { margin-top: 6mm; font-size: 14pt; color: #333; }
 
     /* ---------- Controls (screen only) ---------- */
     .song-pick { columns: 2 260px; column-gap: 24px; }
@@ -268,15 +267,15 @@ function layout(items, opts) {
 function frontPage(items, start, label) {  // items already in reading order
   const p = document.createElement('div');
   p.className = 'page front';
-  const dense = items.length > 18;
+  const dense = items.length > 22;
   const today = new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
   p.innerHTML = `
     <img class="banner" src="banner-light.svg" alt="">
     <h1>Song lyrics</h1>
     <div class="sub">${esc(label)} &middot; ${today}</div>
     <div class="rule"></div>
-    <ol class="toc${dense ? ' two' : ''}" style="font-size:${dense ? 15 : 18}pt">
-      ${items.map((it, i) => `<li><span class="n">${i + 1}</span><span class="t">${esc(it.song.title)}</span><span class="p">${start[it.song.slug] ?? ''}</span></li>`).join('')}
+    <ol class="toc${dense ? ' two' : ''}" style="font-size:14pt">
+      ${items.map(it => `<li><span class="t">${esc(it.song.title)}</span><span class="p">${start[it.song.slug] ?? ''}</span></li>`).join('')}
     </ol>
     <div class="legend">The part is shown only where it changes. Everyone sings unless a part is shown:
       <strong>S</strong> Soprano &nbsp; <strong>A</strong> Alto &nbsp; <strong>M</strong> Men.</div>`;
