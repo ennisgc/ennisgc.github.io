@@ -185,8 +185,9 @@ function layout(items, opts) {
   const addPage = () => { const el = newPage(sheets, opts.cols); const pg = { el, cols: [...el.querySelectorAll('.col')] }; pages.push(pg); return pg; };
 
   // Add as many stanzas as fit (from..k) to a column; returns the new element and k (k == from if none fit).
-  function fillColumn(col, song, stanzas, from, force, bare) {
+  function fillColumn(col, song, stanzas, from, force, bare, pad) {
     const continued = from > 0;
+    const songEl = (...a) => { const e = window.songEl(...a); if (bare && pad) e.style.paddingTop = pad + 'px'; return e; };
     let k = from, el = null;
     while (k < stanzas.length) {
       const next = songEl(song, stanzas, from, k + 1, continued, bare);
@@ -261,7 +262,13 @@ function layout(items, opts) {
       while (from < stanzas.length) {
         if (c >= opts.cols) { pg = addPage(); c = 0; }
         const col = pg.cols[c];
-        const r = fillColumn(col, song, stanzas, from, true, c > 0);
+        let r;
+        if (c > 0 && from > 0 && where[song.slug]) {   // lyrics in a later column start level with the first column's lyrics (below the title), unless that space is needed to fit
+          const e0 = where[song.slug].el, st = e0.querySelector('.stanza');
+          const pad = st ? st.getBoundingClientRect().top - e0.getBoundingClientRect().top : 0;
+          r = fillColumn(col, song, stanzas, from, true, true, pad);
+          if (r.k < stanzas.length) { col.innerHTML = ''; r = fillColumn(col, song, stanzas, from, true, true, 0); }
+        } else r = fillColumn(col, song, stanzas, from, true, c > 0);
         if (r.k > from) { if (from === 0) where[song.slug] = { pg, col, el: r.el }; col.dataset.used = '1'; from = r.k; }
         c++;
       }
