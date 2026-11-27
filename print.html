@@ -140,10 +140,10 @@ async function loadLyrics(slug) {
 
 // ---------- Building elements ----------
 // Part tag shows only when the part changes (and not for the everyone-sings "S A M" at the very start of a song).
-function songEl(song, stanzas, from, to, continued) {
+function songEl(song, stanzas, from, to, continued, bare) {  // bare: carries on in the next column of the same page, so no heading
   const el = document.createElement('div');
   el.className = 'song';
-  let html = `<h2>${esc(song.title)}${continued ? ' <small>(continued)</small>' : ''}</h2>`;
+  let html = bare ? '' : `<h2>${esc(song.title)}${continued ? ' <small>(continued)</small>' : ''}</h2>`;
   let prev = null;
   for (let i = from; i < to; i++) {
     html += '<div class="stanza">';
@@ -153,7 +153,7 @@ function songEl(song, stanzas, from, to, continued) {
         if (!(everyone && prev === null && i === 0 && from === 0)) html += `<div class="part">${esc(ln.part)}</div>`;
         prev = ln.part;
       }
-      html += `<div class="line">${ln.html}</div>`;
+      html += `<div class="line"${ln.size ? ` style="font-size:${ln.size}pt"` : ''}>${ln.html}</div>`;
     }
     html += '</div>';
   }
@@ -182,14 +182,14 @@ function layout(items, opts) {
   const addPage = () => { const el = newPage(sheets, opts.cols); const pg = { el, cols: [...el.querySelectorAll('.col')] }; pages.push(pg); return pg; };
 
   // Add as many stanzas as fit (from..k) to a column; returns the new element and k (k == from if none fit).
-  function fillColumn(col, song, stanzas, from, force) {
+  function fillColumn(col, song, stanzas, from, force, bare) {
     const continued = from > 0;
     let k = from, el = null;
     while (k < stanzas.length) {
-      const next = songEl(song, stanzas, from, k + 1, continued);
+      const next = songEl(song, stanzas, from, k + 1, continued, bare);
       if (el) col.replaceChild(next, el); else col.appendChild(next);
       if (overflows(col)) {
-        if (el) col.replaceChild(songEl(song, stanzas, from, k, continued), next);
+        if (el) col.replaceChild(songEl(song, stanzas, from, k, continued, bare), next);
         else if (force && !col.dataset.used) { el = next; k++; continue; }   // one stanza taller than a column: keep it
         else col.removeChild(next);
         return { el: el ? col.lastChild : null, k };
@@ -199,7 +199,7 @@ function layout(items, opts) {
     return { el, k };
   }
 
-  // Try to put a whole song on an existing page. Returns the pieces placed, or null (nothing changed).
+  // Try to put a whole one-column song into a column of an existing page. Returns the pieces placed, or null.
   function placeInPage(pg, song, stanzas) {
     const n = stanzas.length;
     for (const col of pg.cols) {                       // (a) all in one column
@@ -208,41 +208,57 @@ function layout(items, opts) {
       if (!overflows(col)) return [{ col, el }];
       col.removeChild(el);
     }
-    for (let i = 0; i < pg.cols.length - 1; i++) {     // (b) across columns of this page
-      const placed = [];
-      let from = 0, c = i;
-      while (from < n && c < pg.cols.length) {
-        const r = fillColumn(pg.cols[c], song, stanzas, from, false);
-        if (r.k > from) { placed.push({ col: pg.cols[c], el: r.el }); from = r.k; }
-        c++;
-      }
-      if (from >= n) return placed;
-      placed.forEach(x => x.col.removeChild(x.el));
-    }
     return null;
   }
 
-  // Which songs fit on a single page? (test on a scratch page)
+  // Lines that would wrap at the chosen size but fit on one line a little smaller (down to 13 pt,
+  // and never more than 1 pt below the chosen size) are shrunk so they stay on one line.
   const scratch = addPage();
-  items.forEach(it => { const r = placeInPage(scratch, it.song, it.stanzas); it.short = !!r; if (r) r.forEach(x => x.col.removeChild(x.el)); });
+  {
+    const col = scratch.cols[0], W = col.clientWidth;
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;left:0;top:0';
+    col.appendChild(probe);
+    const floor = Math.max(13, opts.font - 1);
+    for (const it of items) for (const st of it.stanzas) for (const ln of st) {
+      ln.size = null;
+      probe.style.fontSize = opts.font + 'pt';
+      probe.innerHTML = ln.html;
+      const w = probe.getBoundingClientRect().width;
+      if (w <= W) continue;
+      const need = Math.floor(opts.font * (W / w) * 0.995 * 4) / 4;   // quarter-point steps, small safety margin
+      if (need >= floor) ln.size = need;
+    }
+    probe.remove();
+  }
+  // Which songs fit in a single column? Those can fill gaps anywhere. A song that needs more than one
+  // column (two columns, or more than a page) always starts at the top of column 1 of a fresh page.
+  items.forEach(it => {
+    const col = scratch.cols[0];
+    const el = songEl(it.song, it.stanzas, 0, it.stanzas.length, false);
+    col.appendChild(el);
+    it.single = !overflows(col);
+    col.removeChild(el);
+  });
   pages.pop().el.remove();
 
   const where = {};
-  for (const it of items) {
+  // Songs needing 2+ columns go first (each on a fresh page); one-column songs then fill the gaps.
+  for (const it of [...items.filter(x => !x.single), ...items.filter(x => x.single)]) {
     const { song, stanzas } = it;
     let done = false;
-    if (it.short) {
+    if (it.single) {
       for (const pg of pages) {
         const r = placeInPage(pg, song, stanzas);
         if (r) { where[song.slug] = { pg, col: r[0].col, el: r[0].el }; done = true; break; }
       }
       if (!done) { const pg = addPage(); const r = placeInPage(pg, song, stanzas); where[song.slug] = { pg, col: r[0].col, el: r[0].el }; }
-    } else {                                           // long song: fresh page, column 1, flows on
+    } else {                                           // needs 2+ columns: fresh page, column 1, flows on
       let pg = addPage(), c = 0, from = 0;
       while (from < stanzas.length) {
         if (c >= opts.cols) { pg = addPage(); c = 0; }
         const col = pg.cols[c];
-        const r = fillColumn(col, song, stanzas, from, true);
+        const r = fillColumn(col, song, stanzas, from, true, c > 0);
         if (r.k > from) { if (from === 0) where[song.slug] = { pg, col, el: r.el }; col.dataset.used = '1'; from = r.k; }
         c++;
       }
